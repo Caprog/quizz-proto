@@ -1,6 +1,5 @@
-import { shuffle } from "../utils.shared.js"
 
-const questions = [
+export const QUESTIONS = [
   {
     "question": "Quelle est la règle d'or de David Mekersa pour les débutants ?",
     "options": [
@@ -452,15 +451,3 @@ const questions = [
     ]
   }
 ]
-
-
-export const QuestionService = {
-  getRandomQuestions: (count = 3) => {
-    return shuffle(questions)
-      .slice(0, count)
-      .map(({ question, options }) => ({
-        question,
-        options: shuffle(options)
-      }))
-  }
-}

@@ -1,19 +1,20 @@
 import { WebSocketServer } from 'ws';
-import { CONTEXTS, WS_PORT, WS_URL } from './contants.shared.js';
-import { broadcast, dispatch, enter } from './router.js';
+import { CONTEXTS, WS_PORT, WS_URL, SOCKET_EVENTS } from '../contants.shared.js';
+import { dispatch, switchContext } from './router/router.js';
 import { PlayersService } from './service/players.service.js';
 
+const { CONNECTION, MESSAGE, CLOSE, LISTENING } = SOCKET_EVENTS
 const wss = new WebSocketServer({ port: WS_PORT });
 
-wss.on('connection', (ws) => {
+wss.on(CONNECTION, (ws) => {
   const playerId = Math.random().toString(36).slice(2, 9)
   
   PlayersService.addPlayer(playerId, { ws, me: {} })
 
-  broadcast(enter(playerId, CONTEXTS.HOME))
+  switchContext(playerId, CONTEXTS.HOME)
   
-  ws.on('message', (data) => {
-    console.log('message', data.toString())
+  ws.on(MESSAGE, (data) => {
+    console.log(MESSAGE, data.toString())
     const d = JSON.parse(data)
 
     dispatch({
@@ -23,9 +24,9 @@ wss.on('connection', (ws) => {
     })
   })
 
-  ws.on('close', () => PlayersService.removePlayer(playerId));
+  ws.on(CLOSE, () => PlayersService.removePlayer(playerId));
 })
 
-wss.on('listening', () => {
+wss.on(LISTENING, () => {
   console.log(`Server started at ${WS_URL}`)
 })

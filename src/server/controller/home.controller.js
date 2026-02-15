@@ -1,4 +1,4 @@
-import { SCOPES } from "../contants.shared.js"
+import { SCOPES } from "../../contants.shared.js"
 
 const actions = {
   solo: { type: 'solo' },
@@ -7,21 +7,19 @@ const actions = {
 }
 
 const handlers = {
-  solo: (playerId) => {
+  solo: () => {
     return {
         context: 'game',
-        scope: SCOPES.BROADCAST,
-        recipients: [playerId]
+        scope: SCOPES.PRIVATE
     }
   }
 }
 
 export const HomeController = {
 
-    enter(playerId) {
+    enter() {
         return {
-            scope: SCOPES.BROADCAST,
-            recipients: [playerId]
+            scope: SCOPES.PRIVATE
         }
     },
 
@@ -34,9 +32,6 @@ export const HomeController = {
     },
 
     handle(playerId, type, _payload) {
-        const handler = handlers[type]
-        if (!handler) return
-
-        return handler(playerId)
+        return handlers[type]?.(playerId)
     }
 }

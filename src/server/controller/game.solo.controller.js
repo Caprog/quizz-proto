@@ -1,8 +1,8 @@
-import { SCOPES } from "../contants.shared.js"
+import { CONTEXTS, SCOPES } from "../../contants.shared.js"
 import { GameService } from "../service/game.service.js"
 import { PlayersService } from "../service/players.service.js"
 
-const { BROADCAST } = SCOPES
+const { PRIVATE } = SCOPES
 
 export const GameController = {
   enter(playerId) {
@@ -11,8 +11,7 @@ export const GameController = {
     GameService.startGame(playerId)
 
     return {
-      scope: BROADCAST,
-      recipients: [playerId]
+      scope: PRIVATE
     }
   },
 
@@ -20,11 +19,11 @@ export const GameController = {
     const game = GameService.getGame(playerId)
     const player = PlayersService.getPlayer(playerId)
     return {
-      game: {
+      game: game ? {
         type: 'solo',
         phase: game.phase,
         data: game.data
-      },
+      } : null,
       me: {
         ...player.me,
         actions: GameService.getActions(playerId)
@@ -38,17 +37,13 @@ export const GameController = {
     const exist = GameService.getGame(playerId)
     
     return {
-      scope: BROADCAST,
-      context: exist ? 'game' : 'home',
-      recipients: [playerId]
+      scope: PRIVATE,
+      context: exist ? 'game' : 'home'
     }
   },
 
-  disconnect(playerId) {
+  exit(playerId) {
     GameService.removeGame(playerId)
-    return {
-      scope: BROADCAST,
-      recipients: [playerId]
-    }
+    return null
   }
 }

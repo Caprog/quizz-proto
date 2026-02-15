@@ -59,7 +59,7 @@ const handleQuestion = (playerId, type, payload) => {
             if (!player?.me?.selection?.length) return
             
             const game = getGame(id)
-            game.phase = 'progress'
+            game.phase = 'feedback'
             
             delete player.me.selection
 
@@ -117,4 +117,12 @@ const removeGame = (playerId) => {
     games.delete(playerId)
 }
 
-export const GameService = { createGame, addPlayer, getGame, startGame, handle, getActions, removeGame }
+export const GameService = { 
+    createGame,
+    addPlayer,
+    getGame,
+    startGame,
+    handle,
+    getActions,
+    removeGame
+}

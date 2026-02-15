@@ -1,6 +1,5 @@
 import { test, describe, after, afterEach } from 'node:test'
 import { TestClient } from './shared/test.utils.js'
-import { HOME_TESTS } from './home.e2e.test.js'
 import { SOLO_TESTS } from './solo.e2e.test.js'
 import { GAME_QUESTION_SCHEMA } from './schema/game.question.schema.js'
 
@@ -71,8 +70,8 @@ describe('solo.game.loop', () => {
     client.sendAction('confirm')
     
     await client.evaluate({
-      expression: (client) => client.state?.game?.phase === 'progress', 
-      message: 'Context should be game.phase = progress'
+      expression: (client) => client.state?.game?.phase === 'feedback', 
+      message: 'Context should be game.phase = feedback'
     })
 
     // only leave game action should be available

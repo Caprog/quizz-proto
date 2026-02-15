@@ -1,4 +1,4 @@
-import { connect } from "../../src/client.js"
+import { connect } from "../../src/client/client.js"
 import { WS_URL } from "../../src/contants.shared.js"
 import assert from 'node:assert/strict'
 
