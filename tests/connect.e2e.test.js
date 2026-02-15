@@ -1,5 +1,5 @@
 import { test, describe } from 'node:test'
-import { TestClient } from './test.utils.js'
+import { TestClient } from './shared/test.utils.js'
 
 describe('connect', () => {
   let client
@@ -8,12 +8,18 @@ describe('connect', () => {
     client = new TestClient()
 
     await client.connect()
-      .evaluate((client) => client.isReady(), 'Client is not ready')
+      .evaluate({
+        expression: (client) => client.isReady(), 
+        message: 'Client is not ready'
+      })
   })
 
   test('should close the connection', async () => {
     await client.close()
-      .evaluate((client) => !client.isReady(), 'Client is still ready')
+      .evaluate({
+        expression: (client) => !client.isReady(), 
+        message: 'Client is still ready'
+      })
   })
 
 })

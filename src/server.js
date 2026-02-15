@@ -1,25 +1,29 @@
 import { WebSocketServer } from 'ws';
-import { WS_PORT, WS_URL } from './contants.shared.js';
+import { CONTEXTS, WS_PORT, WS_URL } from './contants.shared.js';
+import { broadcast, dispatch, enter } from './router.js';
+import { PlayersService } from './service/players.service.js';
 
 const wss = new WebSocketServer({ port: WS_PORT });
-const state = new Map();
-
-const handlers = {
-
-};
 
 wss.on('connection', (ws) => {
-  const id = Math.random().toString(36).slice(2, 9)
+  const playerId = Math.random().toString(36).slice(2, 9)
   
-  state.set(id, {});
+  PlayersService.addPlayer(playerId, { ws, me: {} })
+
+  broadcast(enter(playerId, CONTEXTS.HOME))
   
   ws.on('message', (data) => {
+    console.log('message', data.toString())
     const d = JSON.parse(data)
-    console.log(d)
-    // state.set(id, { type, payload })
+
+    dispatch({
+      playerId, 
+      type: d?.type, 
+      payload: d?.payload
+    })
   })
 
-  ws.on('close', () => state.delete(id));
+  ws.on('close', () => PlayersService.removePlayer(playerId));
 })
 
 wss.on('listening', () => {

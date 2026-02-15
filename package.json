@@ -3,13 +3,17 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "server": "node src/server.js",
-        "client": "node src/client.js",
-        "test": "node --test tests/**/*.test.js",
-        "test:watch": "node --test --watch tests/**/*.test.js",
-        "test:report": "node --test --test-reporter=spec tests/**/*.test.js"
+        "server": "clear && nodemon src/server.js",
+        "client": "clear && node src/client.js",
+        "test": "clear && node --test tests/**/*.test.js --test-timeout=5000 --test-concurrency=1",
+        "test:watch": "clear && node --test --watch tests/**/*.test.js --test-timeout=5000 --test-concurrency=1",
+        "test:report": "clear && node --test --test-reporter=spec tests/**/*.test.js"
     },
     "dependencies": {
-        "ws": "^8.19.0"
+        "ws": "^8.19.0",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.11"
     }
 }
