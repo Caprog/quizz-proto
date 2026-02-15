@@ -1,4 +1,4 @@
-import { CONTEXTS, SCOPES } from "../../contants.shared.js"
+import { SCOPES } from "../../shared/contants.shared.js"
 import { GameService } from "../service/game.service.js"
 import { PlayersService } from "../service/players.service.js"
 
@@ -45,5 +45,9 @@ export const GameController = {
   exit(playerId) {
     GameService.removeGame(playerId)
     return null
+  },
+
+  getActions(playerId) {
+    return GameService.getActions(playerId)
   }
 }

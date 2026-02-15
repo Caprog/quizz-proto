@@ -1,18 +1,26 @@
 import { WebSocket } from 'ws';
 
-export const connect = (url, onSync) => {
+export const connect = (url, onMessage) => {
   const ws = new WebSocket(url)
 
-  ws.on('message', (data) => {
-    const { type, payload } = JSON.parse(data)
-    type === 'sync' && onSync(payload)
-  })
+  ws.on('message', (data) => onMessage?.(JSON.parse(data)))
 
   const send = (type, payload) => {
-    if (ws.readyState === WebSocket.OPEN) {
+    if (isReady()) {
       ws.send(JSON.stringify({ type, payload }))
     }
   }
 
-  return { ws, send }
+  const isReady = () => ws.readyState === WebSocket.OPEN
+
+  const close = () => ws.close()
+
+  return {
+    send,
+    isReady,
+    close
+  }
 }
+
+
+

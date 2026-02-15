@@ -1,4 +1,4 @@
-import { SCOPES } from "../../contants.shared.js"
+import { SCOPES } from "../../shared/contants.shared.js"
 
 const actions = {
   solo: { type: 'solo' },
@@ -33,5 +33,9 @@ export const HomeController = {
 
     handle(playerId, type, _payload) {
         return handlers[type]?.(playerId)
+    },
+
+    getActions() {
+        return actions
     }
 }

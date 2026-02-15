@@ -30,6 +30,18 @@ export const HOME_TESTS = {
       expression: (client) => shouldBeValidAction(client, 'create'), 
       message: 'Action create should be a valid action'
     },
+  shouldBlockUnknownAction: {
+    setup: (client) => client.send('unknown', {}),
+    expression: (client) => 
+      client.error?.type === 'GUARD_REJECTED' 
+      && client.error?.payload?.type === 'ACTION_NOT_ALLOWED'
+      && client.error?.payload?.action === 'unknown'
+      && client.error?.payload?.allowedActions?.length === 3
+      && client.error?.payload?.allowedActions?.includes('solo')
+      && client.error?.payload?.allowedActions?.includes('join')
+      && client.error?.payload?.allowedActions?.includes('create'), 
+    message: 'Action unknown should be blocked'
+  },
 }
 
 describe('home', () => {
@@ -60,5 +72,9 @@ describe('home', () => {
 
   test('action create should be a valid action', async (t) => {
     await client.evaluate(HOME_TESTS.shouldBeValidCreateAction)
+  })
+
+  test('action unknown should be blocked', async (t) => {
+    await client.execute(HOME_TESTS.shouldBlockUnknownAction)
   })
 })

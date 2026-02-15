@@ -82,4 +82,5 @@ describe('solo.game.loop', () => {
       message: 'Me actions should be undefined'
     })
   })
+
 })

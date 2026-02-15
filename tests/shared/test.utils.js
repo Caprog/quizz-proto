@@ -1,23 +1,35 @@
+import { WebSocketRouter } from "../../src/shared/client.shared.js"
 import { connect } from "../../src/client/client.js"
-import { WS_URL } from "../../src/contants.shared.js"
+import { WS_URL } from "../../src/shared/contants.shared.js"
 import assert from 'node:assert/strict'
 
 export class TestClient {
 
     state = {}
-    ws = null
+    error = null
+    send = null
+    isReady = null
+    performClose = null
 
     connect() {
-        const { ws, send } = connect(WS_URL, (data) => {
-            this.state = data
-        })
-        this.ws = ws
-        this.send = send
-        return this
-    }
+        const messageHandler = WebSocketRouter(
+            (data) => {
+                this.state = data
+            }, 
+            (error) => {
+                this.error = error
+            }
+        )
 
-    isReady() {
-        return this.ws.readyState === WebSocket.OPEN
+        const { send, isReady, close } = connect(
+            WS_URL, 
+            messageHandler.onmessage
+        )
+
+        this.send = send
+        this.isReady = isReady
+        this.performClose = close
+        return this
     }
 
     async evaluate(opt) {
@@ -28,6 +40,13 @@ export class TestClient {
         return this
     }
 
+    async execute(opt) {
+        if(!opt) throw new Error('No expression provided')
+        const { setup, ...rest } = opt
+        await setup?.(this)
+        return this.evaluate(rest)
+    }
+
     async evaluateAll(opts) {
         for (const opt of opts) {
             await this.evaluate(opt)
@@ -35,15 +54,22 @@ export class TestClient {
         return this
     }
 
-    sendAction(actionName, payload) {
-        const action = this.state?.me?.actions?.[actionName]
-        if (!action) throw new Error(`Action ${actionName} not found`)
-        this.send(action?.type, payload)
+    async executeAll(opts) {
+        for (const opt of opts) {
+            await this.execute(opt)
+        }
         return this
     }
 
     close() {
-        this.ws?.close?.()
+        this.performClose?.()
+        return this
+    }
+
+    sendAction(actionName, payload) {
+        const action = this.state?.me?.actions?.[actionName]
+        if (!action) throw new Error(`Action ${actionName} not found`)
+        this.send(action?.type, payload)
         return this
     }
 }

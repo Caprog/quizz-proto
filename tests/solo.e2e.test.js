@@ -36,6 +36,6 @@ describe('solo', () => {
   })
 
   test('all home test should be pass', async (t) => {
-      await client.evaluateAll(Object.values(HOME_TESTS))
+      await client.executeAll(Object.values(HOME_TESTS))
   })
 })

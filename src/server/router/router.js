@@ -1,15 +1,31 @@
-import { SCOPES } from "../../contants.shared.js";
+import { SCOPES } from "../../shared/contants.shared.js";
 import { PlayersService } from "../service/players.service.js";
 import { WebSocketService } from "../service/ws.service.js";
 import { Routes } from "./routes.js";
 
 export const dispatch = ({ playerId, type, payload }) => {
+    console.log(playerId, type, payload)
     const player = PlayersService.getPlayer(playerId)
 
     const route = Routes[player?.context]
-    if (!route) return
+    if (!route?.controller) return
 
-    const result = route?.handle?.(playerId, type, payload)
+    const { controller, guards } = route
+
+    for (const guard of guards) {
+        const guardResult = guard?.(playerId, type, controller)
+        if (guardResult) {
+            emit(playerId, {
+                type: 'GUARD_REJECTED', 
+                ...guardResult 
+            })
+            return
+        }
+    }
+
+    console.log('dispatch controller', controller)
+
+    const result = controller?.handle?.(playerId, type, payload)
     if (!result) return
 
     if (result?.context && result?.context !== player?.context){
@@ -19,46 +35,66 @@ export const dispatch = ({ playerId, type, payload }) => {
     }
 }
 
+const getController = (playerId) => {
+    const player = PlayersService.getPlayer(playerId)
+    return Routes[player?.context]?.controller
+}
+
 export const switchContext = (playerId, newContext) => {
     const player = PlayersService.getPlayer(playerId)
     if (!player) return
 
-    emit(playerId, Routes[player?.context]?.exit?.(playerId))
+    console.log('switchContext', newContext)
+
+    emit(playerId, getController(playerId)?.exit?.(playerId))
 
     player.context = newContext
     PlayersService.updatePlayer(playerId, player)
 
-    emit(playerId, Routes[newContext]?.enter?.(playerId))
+    // TODO: handle redirect context when enter in a new context in the future
+    emit(playerId, getController(playerId)?.enter?.(playerId))
 }
 
 export const emit = (playerId, result) => {
-    if(!result || !result.scope) return
+    if (!result || !result.scope) return
+
+    const type = result?.type ?? 'sync'
+
+    const resolveData = (playerId) => {
+        const player = PlayersService.getPlayer(playerId)
+        const route = Routes[player?.context]
+
+        const data = result?.payload ? 
+            { payload: result?.payload } : 
+            route?.controller?.sync?.(playerId)
+
+        return {
+            context: player?.context,
+            type,
+            ...data
+        }
+    }
 
     if (result.scope === SCOPES.BROADCAST) {
-        result.recipients?.forEach?.(syncPlayer)
+        result.recipients?.forEach?.(
+            (playerId) => notifyPlayer(playerId, type, resolveData(playerId))
+        )
     }
 
     if (result.scope === SCOPES.PRIVATE) {
-        syncPlayer(playerId)
+        notifyPlayer(playerId, type, resolveData(playerId))
     }
 }
 
-export const syncPlayer = (playerId) => {
+export const notifyPlayer = (playerId, type, payload) => {
     const player = PlayersService.getPlayer(playerId)
-    const route = Routes[player?.context]
+    if (!player?.ws) return
 
-    if (!player?.ws || !route?.sync) return
-
-    const data = {
-        context: player?.context,
-        ...route?.sync?.(playerId)
-    }
-
-    console.log('sync', data)
+    console.log('syncPlayer', type, payload)
 
     WebSocketService.send(
         player?.ws, 
-        'sync', 
-        data
+        type, 
+        payload
     )
 }

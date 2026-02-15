@@ -1,5 +1,5 @@
-const WS_PORT = 3000
-const WS_URL = `ws://localhost:${WS_PORT}`
+const PORT = 3000
+const WS_URL = `ws://localhost:${PORT}`
 
 const SOCKET_EVENTS = {
     CONNECTION: 'connection',
@@ -18,4 +18,4 @@ const CONTEXTS = {
     GAME: 'game'
 }
 
-export { WS_PORT, WS_URL, SCOPES, CONTEXTS, SOCKET_EVENTS }
+export { PORT, WS_URL, SCOPES, CONTEXTS, SOCKET_EVENTS }
