@@ -1,36 +1,41 @@
-import { GameService } from "../service/game.service.js"
+import { CONTEXTS } from "../../shared/contants.shared.js"
+import { GameSoloService } from "../service/game.service.js"
 import { phases } from "../service/phase/phase.js"
 
 export const GameController = {
   enter({ id, emit }) {
-    GameService.createGame(id)
-    GameService.addPlayer(id, {})
-    GameService.startGame(id)
+    GameSoloService.createGame(id)
     this.sync({ id, emit })
   },
 
   sync({ id, emit }) {
-    const game = GameService.getGameState(id)
+    const game = GameSoloService.getGameState(id)
     
     emit('sync', {
+      context: 'game',
       game: game ? {
         type: 'solo',
         phase: game.phase,
         data: phases?.[game?.phase]?.sync(id)
       } : null,
       me: {
-        actions: GameService.getActions(id)
+        actions: GameSoloService.getActions(id)
       }
     })
   },
   
   handle({ id, emit }, type, payload) {
-    GameService.handle(id, type, payload)
+
+    if (type === 'leave') {
+      return CONTEXTS.HOME
+    }
+
+    GameSoloService.handle(id, type, payload)
 
     this.sync({ id, emit })
   },
 
   exit({ id }) {
-    GameService.removeGame(id)
+    GameSoloService.removeGame(id)
   }
 }

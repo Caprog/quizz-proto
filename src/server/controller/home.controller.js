@@ -14,12 +14,12 @@ export const HomeController = {
         })
     },
 
-    handle({ goto }, type, payload) {
+    handle(_context,type, _payload) {
         const handlers = {
-            solo: () => goto(CONTEXTS.GAME)
+            solo: CONTEXTS.GAME
         }
 
-        handlers[type]?.()
+        return handlers[type]
     },
 
     exit() {}

@@ -1,12 +1,12 @@
 import { PlayersService } from "../players.service.js"
-import { GameService } from "../game.service.js"
+import { GameSoloService } from "../game.service.js"
 
 const handle = (playerId, type, payload) => {
     const handlers = {
         select: (id, _type, payload) => {
             console.log('select', payload)
             const player = PlayersService.getPlayer(id)
-            const game = GameService.getGameState(id)
+            const game = GameSoloService.getGameState(id)
             const option = game?.data?.options?.find?.((option) => option.value === payload)
             if (!option) return
 
@@ -18,10 +18,10 @@ const handle = (playerId, type, payload) => {
             const player = PlayersService.getPlayer(id)
             if (!player?.me?.selection?.length) return
             
-            const game = GameService.getGameState(id)
+            const game = GameSoloService.getGameState(id)
             game.phase = 'feedback'
             
-            GameService.saveGame(id, game)
+            GameSoloService.saveGame(id, game)
             PlayersService.updatePlayer(id, player)
 
             return {

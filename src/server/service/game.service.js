@@ -13,6 +13,9 @@ const createGame = (id) => {
     phase: 'lobby',
     questions
   })
+
+  addPlayer(id, {})
+  startGame(id)
 }
 
 const addPlayer = (id, state) => {
@@ -71,11 +74,9 @@ const removeGame = (playerId) => {
     games.delete(playerId)
 }
 
-export const GameService = { 
+export const GameSoloService = { 
     createGame,
-    addPlayer,
     getGameState,
-    startGame,
     handle,
     getActions,
     removeGame
