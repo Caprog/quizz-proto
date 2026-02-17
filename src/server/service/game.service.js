@@ -1,5 +1,6 @@
 import { PlayersService } from "./players.service.js"
 import { QuestionService } from "./question.service.js"
+import { phases } from "./phase/phase.js"
 
 const games = new Map()
 
@@ -42,64 +43,17 @@ const startGame = (id) => {
     saveGame(id, game)
 }
 
-const handleQuestion = (playerId, type, payload) => {
-    const handlers = {
-        select: (id, _type, payload) => {
-            const player = PlayersService.getPlayer(id)
-            const game = getGame(id)
-            const option = game?.data?.options?.find?.((option) => option.value === payload)
-            if (!option) return
-
-            player.me.selection = [payload]
-
-            PlayersService.updatePlayer(id, player)
-        },
-        confirm: (id, _type, _payload) => {
-            const player = PlayersService.getPlayer(id)
-            if (!player?.me?.selection?.length) return
-            
-            const game = getGame(id)
-            game.phase = 'feedback'
-            
-            delete player.me.selection
-
-            saveGame(id, game)
-            PlayersService.updatePlayer(id, player)
-        },
-    }
-
-    handlers[type]?.(playerId, type, payload)
-}
-
-const handleProgress = (_playerId, _type, _payload) => {
-    const handlers = {
-
-    }
-}
-
-const phases = {
-    question: handleQuestion,
-    progress: handleProgress
-}
-
 const getActions = (playerId) => {
     const game = games.get(playerId)
-    
+    const phase = phases?.[game?.phase]
     const commonActions = {
         leave: { type: 'leave' }
     }
 
-    if (game.phase === 'question') {
-
-        return {
-            ...commonActions,
-            select: { type: 'select' },
-            confirm: { type: 'confirm' }
-        }
-
+    return {
+        ...commonActions,
+        ...phase?.getActions(playerId) ?? {}
     }
-
-    return commonActions
 }
 
 const handle = (playerId, type, payload) => {
@@ -110,7 +64,7 @@ const handle = (playerId, type, payload) => {
         return
     }
 
-    phases[game.phase]?.(playerId, type, payload)
+    phases?.[game?.phase]?.handle(playerId, type, payload)
 }
 
 const removeGame = (playerId) => {

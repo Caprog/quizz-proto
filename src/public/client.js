@@ -21,13 +21,36 @@ export const connect = (url, onMessage) => {
   }
 }
 
-connect(WS_URL, 
-    WebSocketRouter(
-        (data) => {
-          document.getElementById('app').innerHTML = JSON.stringify(data, null, 2)
-        },
-        (error) => {
-          document.getElementById('app').innerHTML = JSON.stringify(error, null, 2)
-        }
-    ).onmessage
-)
+const { createApp, ref, computed } = Vue
+
+createApp({
+  setup() {
+  const state = ref(
+    {
+      data: {},
+      error: {}
+    }
+  )
+  
+  const client = connect(WS_URL, 
+      WebSocketRouter(
+          (data) => {
+            state.value.data = data
+          },
+          (error) => {
+            state.value.error = error
+          }
+      ).onmessage
+  )
+
+  const isContext = (context) => state.value?.data?.context === context
+
+  const actions = computed(() => state.value?.data?.me?.actions ?? {})
+
+  const send = (action) => {
+   client.send(action?.type, action?.payload)
+  }
+
+  return { state, isContext, actions, send }
+}
+}).mount('#app')

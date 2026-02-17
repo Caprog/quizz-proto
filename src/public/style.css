@@ -1,0 +1,18 @@
+/* add minimalist basic style in css classic */
+
+body {
+    color: #e3e2e2;
+    background-color: #292929;
+}
+
+button {
+    color: #292929;
+    padding: 0.25rem 1rem;
+    background-color: #e3e2e2;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+button.secondary {
+    background-color: #14be47;
+}

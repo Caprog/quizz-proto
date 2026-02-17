@@ -5,13 +5,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Proto</title>
-  <script type="module">
-    import tailwindcss from 'https://cdn.jsdelivr.net/npm/tailwindcss@4.1.18/+esm'
-  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="./style.css">  
 </head>
 
 <body>
-  <pre id="app"></pre>
+  <div id="app">
+    <header class="m-8">
+        <nav class="flex gap-4">
+          <button 
+            v-if="isContext('home')" 
+            v-for="[actionName, action] in Object.entries(actions)" 
+            :key="actionName" 
+            @click="send(action)">
+            {{ actionName }}
+          </button>
+
+          <button v-if="isContext('game')" @click="send(actions?.leave)">
+            Leave
+          </button>
+        </nav>
+    </header>
+
+    <main class="flex gap-4 justify-between">
+      <div>
+        
+      </div>
+      <div class="flex flex-col gap-4">
+        <h1>{{ state?.data?.game?.data?.text }}</h1>
+        
+        <button 
+          v-for="option in state?.data?.game?.data?.options" 
+          :key="option.value" 
+          :disabled="!actions?.select" 
+          @click="send({ 
+            ...actions.select,
+            payload: option.value
+          })"
+        >
+          {{ option.text }}
+        </button>
+
+        <button v-if="actions?.confirm" @click="send(actions?.confirm)" class="secondary">
+          Confirm
+        </button>
+    
+      </div>
+      <pre class="text-xs">{{ state }}</pre>
+    </main>
+
+  </div>
   <script type="module" src="./client.js"></script>
 </body>
 

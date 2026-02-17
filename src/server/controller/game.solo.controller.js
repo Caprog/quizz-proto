@@ -1,6 +1,7 @@
 import { SCOPES } from "../../shared/contants.shared.js"
 import { GameService } from "../service/game.service.js"
 import { PlayersService } from "../service/players.service.js"
+import { phases } from "../service/phase/phase.js"
 
 const { PRIVATE } = SCOPES
 
@@ -22,7 +23,7 @@ export const GameController = {
       game: game ? {
         type: 'solo',
         phase: game.phase,
-        data: game.data
+        data: phases?.[game?.phase]?.sync(playerId)
       } : null,
       me: {
         ...player.me,
