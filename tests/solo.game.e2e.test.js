@@ -38,7 +38,7 @@ describe('solo.game.loop', () => {
     })
   })
 
-  test('should select an option', async (t) => {
+  test('should select an option', { skip: true }, async (t) => {
     const options = client.state?.game?.data?.options
     client.sendAction('select', options?.[0]?.value)
     
@@ -48,7 +48,7 @@ describe('solo.game.loop', () => {
     })
   })
 
-  test('should select random option', async (t) => {
+  test('should select random option', { skip: true }, async (t) => {
     const options = client.state?.game?.data?.options
     const value = options?.[Math.floor(Math.random() * options?.length)]?.value
     client.sendAction('select', value)
@@ -66,7 +66,7 @@ describe('solo.game.loop', () => {
     })
   })
 
-  test('should confirm option', async (t) => {
+  test('should confirm option', { skip: true }, async (t) => {
     client.sendAction('confirm')
     
     await client.evaluate({

@@ -15,7 +15,8 @@ const SCOPES = {
 
 const CONTEXTS = {
     HOME: 'home',
-    GAME: 'game'
+    GAME: 'game',
+    DISCONNECT: 'disconnect'
 }
 
 export { PORT, WS_URL, SCOPES, CONTEXTS, SOCKET_EVENTS }

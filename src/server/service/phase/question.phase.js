@@ -1,9 +1,12 @@
+import { PlayersService } from "../players.service.js"
+import { GameService } from "../game.service.js"
 
 const handle = (playerId, type, payload) => {
     const handlers = {
         select: (id, _type, payload) => {
+            console.log('select', payload)
             const player = PlayersService.getPlayer(id)
-            const game = getGame(id)
+            const game = GameService.getGameState(id)
             const option = game?.data?.options?.find?.((option) => option.value === payload)
             if (!option) return
 
@@ -15,10 +18,10 @@ const handle = (playerId, type, payload) => {
             const player = PlayersService.getPlayer(id)
             if (!player?.me?.selection?.length) return
             
-            const game = getGame(id)
+            const game = GameService.getGameState(id)
             game.phase = 'feedback'
             
-            saveGame(id, game)
+            GameService.saveGame(id, game)
             PlayersService.updatePlayer(id, player)
 
             return {
@@ -39,7 +42,16 @@ const exit = (playerId) => {
 }
 
 const sync = (playerId) => {
-    return {}
+    return {
+        type: 'single',
+        text: 'What is the capital of France?',
+        options: [
+            { text: 'Paris', value: 'paris' },
+            { text: 'London', value: 'london' },
+            { text: 'Berlin', value: 'berlin' },
+            { text: 'Madrid', value: 'madrid' }
+        ]
+    }
 }
 
 const getActions = (playerId) => {

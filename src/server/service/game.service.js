@@ -19,7 +19,7 @@ const addPlayer = (id, state) => {
   games.get(id).players.push(state)
 }
 
-const getGame = (id) => {
+const getGameState = (id) => {
   return games.get(id)
 }
 
@@ -74,7 +74,7 @@ const removeGame = (playerId) => {
 export const GameService = { 
     createGame,
     addPlayer,
-    getGame,
+    getGameState,
     startGame,
     handle,
     getActions,

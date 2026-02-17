@@ -1,16 +1,15 @@
-import { SCOPES } from "../../shared/contants.shared.js";
-
-const ActionGuard = (playerId, action, controller) => {
-  const actions = controller?.getActions?.(playerId) ?? {}
-  const allowedActions = Object.keys(actions)
-  return allowedActions.includes(action) ? null : {
-    scope: SCOPES.PRIVATE,
-    payload: {
+const ActionGuard = (actions) => ({ ctx, type, routeName }) => {
+  if(!actions?.includes(type)) {
+    ctx.emit('GUARD_REJECTED', { 
+      context: routeName, 
       type: 'ACTION_NOT_ALLOWED',
-      action: action,
-      allowedActions
-    }
+      action: type,
+      allowedActions: actions,
+      error: 'Action not allowed' 
+    })
+    return false
   }
+  return true
 }
 
 export const Guards = {

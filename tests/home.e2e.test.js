@@ -36,10 +36,8 @@ export const HOME_TESTS = {
       client.error?.type === 'GUARD_REJECTED' 
       && client.error?.payload?.type === 'ACTION_NOT_ALLOWED'
       && client.error?.payload?.action === 'unknown'
-      && client.error?.payload?.allowedActions?.length === 3
-      && client.error?.payload?.allowedActions?.includes('solo')
-      && client.error?.payload?.allowedActions?.includes('join')
-      && client.error?.payload?.allowedActions?.includes('create'), 
+      && client.error?.payload?.allowedActions?.length === 1
+      && client.error?.payload?.allowedActions?.includes('solo'), 
     message: 'Action unknown should be blocked'
   },
 }

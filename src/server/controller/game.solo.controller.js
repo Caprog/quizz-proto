@@ -1,54 +1,36 @@
-import { SCOPES } from "../../shared/contants.shared.js"
 import { GameService } from "../service/game.service.js"
-import { PlayersService } from "../service/players.service.js"
 import { phases } from "../service/phase/phase.js"
 
-const { PRIVATE } = SCOPES
-
 export const GameController = {
-  enter(playerId) {
-    GameService.createGame(playerId)
-    GameService.addPlayer(playerId, playerId)
-    GameService.startGame(playerId)
-
-    return {
-      scope: PRIVATE
-    }
+  enter({ id, emit }) {
+    GameService.createGame(id)
+    GameService.addPlayer(id, {})
+    GameService.startGame(id)
+    this.sync({ id, emit })
   },
 
-  sync(playerId) {
-    const game = GameService.getGame(playerId)
-    const player = PlayersService.getPlayer(playerId)
-    return {
+  sync({ id, emit }) {
+    const game = GameService.getGameState(id)
+    
+    emit('sync', {
       game: game ? {
         type: 'solo',
         phase: game.phase,
-        data: phases?.[game?.phase]?.sync(playerId)
+        data: phases?.[game?.phase]?.sync(id)
       } : null,
       me: {
-        ...player.me,
-        actions: GameService.getActions(playerId)
+        actions: GameService.getActions(id)
       }
-    }
+    })
   },
   
-  handle(playerId, type, payload) {
-    GameService.handle(playerId, type, payload)
+  handle({ id, emit }, type, payload) {
+    GameService.handle(id, type, payload)
 
-    const exist = GameService.getGame(playerId)
-    
-    return {
-      scope: PRIVATE,
-      context: exist ? 'game' : 'home'
-    }
+    this.sync({ id, emit })
   },
 
-  exit(playerId) {
-    GameService.removeGame(playerId)
-    return null
-  },
-
-  getActions(playerId) {
-    return GameService.getActions(playerId)
+  exit({ id }) {
+    GameService.removeGame(id)
   }
 }

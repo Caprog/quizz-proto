@@ -1,41 +1,26 @@
-import { SCOPES } from "../../shared/contants.shared.js"
-
-const actions = {
-  solo: { type: 'solo' },
-  join: { type: 'join' },
-  create: { type: 'create' }
-}
-
-const handlers = {
-  solo: () => {
-    return {
-        context: 'game',
-        scope: SCOPES.PRIVATE
-    }
-  }
-}
+import { CONTEXTS } from "../../shared/contants.shared.js"
 
 export const HomeController = {
-
-    enter() {
-        return {
-            scope: SCOPES.PRIVATE
-        }
-    },
-
-    sync(_playerId) {
-        return {
+    enter({ emit }) {
+        emit('sync', {
+            context: CONTEXTS.HOME,
             me: {
-                actions
+                actions: {
+                    solo: { type: 'solo' },
+                    join: { type: 'join' },
+                    create: { type: 'create' }
+                }
             }
+        })
+    },
+
+    handle({ goto }, type, payload) {
+        const handlers = {
+            solo: () => goto(CONTEXTS.GAME)
         }
+
+        handlers[type]?.()
     },
 
-    handle(playerId, type, _payload) {
-        return handlers[type]?.(playerId)
-    },
-
-    getActions() {
-        return actions
-    }
+    exit() {}
 }
