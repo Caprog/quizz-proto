@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
+        "test-js": "clear && node test.js",
         "server": "clear && nodemon src/server/main.js",
         "client": "clear && node src/client/client.js",
         "test": "clear && node --test tests/**/*.test.js --test-timeout=5000 --test-concurrency=1",

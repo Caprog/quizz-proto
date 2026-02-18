@@ -1,23 +1,22 @@
 const MAX_TRANSITION_DEPTH = 5
 
 export class StateMachine {
-  constructor(states, initialState, context) {
+  constructor(states, initialState) {
     this.currentState = null
     this.states = states
-    this.context = context
     this.transition(initialState)
   }
 
-  dispatch(type, payload) {
+  dispatch(context, type, payload) {
     const state = this.states[this.currentState]
     if (!state?.handle) return null
 
-    const next = state.handle(this.context, type, payload)
+    const next = state.handle(context, type, payload)
 
-    if (next) this.transition(next)
+    if (next) this.transition(context, next)
   }
 
-  transition(nextState, depth = 0) {
+  transition(context, nextState, depth = 0) {
     if (depth > MAX_TRANSITION_DEPTH) {
       console.error(`Infinite transition loop detected. Last state: ${this.currentState} -> Next: ${nextState}`)
       return
@@ -30,12 +29,12 @@ export class StateMachine {
 
     if (!nextController) return
 
-    if (currentController?.exit) currentController.exit(this.context)
+    if (currentController?.exit) currentController.exit(context)
 
     this.currentState = nextState
 
     if (nextController?.enter) {
-      const recursiveNext = nextController.enter(this.context)
+      const recursiveNext = nextController.enter(context)
       if (recursiveNext) {
         this.transition(recursiveNext, depth + 1)
       }

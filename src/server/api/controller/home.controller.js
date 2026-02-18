@@ -1,6 +1,6 @@
-import { CONTEXTS } from "../../shared/contants.shared.js"
+import { CONTEXTS } from "../../../shared/contants.shared.js"
 
-export const HomeController = {
+export default {
     enter({ emit }) {
         emit('sync', {
             context: CONTEXTS.HOME,

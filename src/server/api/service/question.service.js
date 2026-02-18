@@ -1,4 +1,4 @@
-import { shuffle } from "../../shared/utils.shared.js"
+import { shuffle } from "../../../shared/utils.shared.js"
 import { QUESTIONS } from "../data/questions.js"
 
 const getRandomQuestions = (count = 3) => {

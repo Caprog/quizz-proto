@@ -1,8 +1,8 @@
-import { CONTEXTS } from "../../shared/contants.shared.js"
+import { CONTEXTS } from "../../../shared/contants.shared.js"
 import { GameSoloService } from "../service/game.service.js"
 import { phases } from "../service/phase/phase.js"
 
-export const GameController = {
+export default {
   enter({ id, emit }) {
     GameSoloService.createGame(id)
     this.sync({ id, emit })
