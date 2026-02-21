@@ -2,8 +2,6 @@ import GameController from "./controller/game.controller.js";
 import HomeController from "./controller/home.controller.js";
 import { CONTEXTS } from "../../shared/contants.shared.js";
 import { StateMachine } from "../core/state.machine.js";
-import { SimpleActionGuard } from "./guards/action.guard.js";
-import { runGuards } from "../core/core.utils.js";
 
 const { HOME, GAME } = CONTEXTS
 
@@ -12,35 +10,30 @@ const ContextHandlers = {
  [GAME]: GameController
 }
 
-const Guards = {
- [HOME]: [SimpleActionGuard(['solo'])]  
-}
-
-
 const machines = new Map()
 
 const onMessage = async (context, { type, payload }) => {
   const machine = machines.get(context.id)
   console.log('onMessage', type, payload)
   console.log('currentState', machine.currentState)
-  const guards = Guards[machine.currentState]
-  const guardResult = await runGuards(guards, { context, type, payload })
-  
-  if (guardResult) {
+  const result = await machine.send(context, { type, payload })
+ 
+  if (result) {
     context.emit('error', {
       context: machine.currentState,
-      payload: guardResult
+      payload: result,
     })
     return
   }
-
-  machine.send(context, { type, payload })
+  
+  context.emit('sync', await machine.view(context)) 
 }
 
-const onConnection = (context) => {
+const onConnection = async (context) => {
   const machine = new StateMachine(ContextHandlers, HOME)
   machine.transition(context, HOME)
   machines.set(context.id, machine)
+  context.emit('sync', await machine.view(context)) 
 }
 
 const onDisconnect = () => {}

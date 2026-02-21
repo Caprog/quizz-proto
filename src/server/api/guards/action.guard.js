@@ -1,4 +1,4 @@
-export const SimpleActionGuard = (actions = []) => async ({ session, type, payload }) => {
+export const SimpleActionGuard = (actions = []) => async ({ session }, { type }) => {
   if(actions.includes(type)) return
 
   return {

@@ -1,18 +1,9 @@
 import { CONTEXTS } from "../../../shared/contants.shared.js"
+import { SimpleActionGuard } from "../guards/action.guard.js"
 
 export default {
-    enter({ emit }) {
-        emit('sync', {
-            context: CONTEXTS.HOME,
-            me: {
-                actions: {
-                    solo: { type: 'solo' },
-                    join: { type: 'join' },
-                    create: { type: 'create' }
-                }
-            }
-        })
-    },
+    guards: [SimpleActionGuard(['solo'])],
+    enter() {},
 
     handle({ emit }, { type }) {
         const handlers = {
@@ -22,5 +13,19 @@ export default {
         return handlers[type]
     },
 
-    exit() {}
+    exit() {},
+
+    view() {
+        console.log('view home')
+        return {
+            context: CONTEXTS.HOME,
+            me: {
+                actions: {
+                    solo: { type: 'solo' },
+                    join: { type: 'join' },
+                    create: { type: 'create' }
+                }
+            }
+        }
+    }
 }

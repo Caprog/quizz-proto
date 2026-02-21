@@ -13,6 +13,7 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
   wss.on(CONNECTION, (ws) => {
 
     const emit = (type, payload) =>  {
+        console.log('emit', type, payload)
         ws?.send?.(JSON.stringify({ type, payload }))
     }
 

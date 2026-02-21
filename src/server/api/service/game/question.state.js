@@ -25,7 +25,6 @@ const enter = ({ game, me }) => {
 const exit = (context) => {}
 
 const view = ({ game, me }) => {
-    console.log('view question', game)
     return {
         text: game.currentQuestion.question,
         options: game.currentQuestion.options

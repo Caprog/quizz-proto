@@ -5,6 +5,7 @@ import { QuestionService } from "../service/question.service.js"
 import { FeedbackPhase } from "../service/game/feedback.state.js"
 import { StateMachine } from "../../core/state.machine.js"
 import { ScorePhase } from "../service/game/score.state.js"
+import { SimpleActionGuard } from "../guards/action.guard.js"
 
 const games = new Map()
 
@@ -60,9 +61,6 @@ export default {
     })
 
     await machine.transition(games.get(id).state, QUESTION)
-    const state = await this.view({ id })
-    console.log('state', state)
-    emit('sync', state)
   },
 
   async view({ id }) {
@@ -84,24 +82,35 @@ export default {
     }
   },
 
-  
+
+  guards: [
+    // check game exists or error
+    (context, { type }) => {
+      const game = games.get(context.id)
+      if (!game) return {
+        type: 'GAME_NOT_FOUND',
+        id: context.id
+      }
+    },
+    // check actions
+    (context, { type }) => {
+      const game = games.get(context.id)
+      if (!game) return
+      return SimpleActionGuard(Object.keys(game.state.me?.actions))(context, { type })
+    }
+  ],
+
   async handle({ id, emit }, { type, payload }) {
     if(!id) return
     
     const game = games.get(id)
     if (!game) return
 
-    if(!game.state.me?.actions?.[type]) return
-
     if (type === 'leave') return CONTEXTS.HOME
 
     await game.machine.send(game.state, { type, payload })
 
     if(game.state.game.phase === END) return CONTEXTS.HOME
-    
-    const state = await this.view({ id })
-    console.log('state', state)
-    emit('sync', state)
   },
 
   exit({ id }) {

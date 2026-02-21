@@ -3,9 +3,15 @@ export class StateMachine {
     if(!states) throw new Error('States are required')
     this.currentState = null
     this.states = states
-  }
+  } 
 
   async send(context, event) {
+    const guards = this.states[this.currentState]?.guards ?? []
+    for (const guard of guards) {
+      const result = await guard(context, event)
+      if (result) return result
+    }
+    
     const next = await this.states[this.currentState]?.handle(context, event)
     next && this.transition(context, next)
   }
