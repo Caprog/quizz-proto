@@ -12,10 +12,13 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
 
   wss.on(CONNECTION, (ws) => {
 
+    const emit = (type, payload) =>  {
+        ws?.send?.(JSON.stringify({ type, payload }))
+    }
+
     const session = {
       id: Math.random().toString(36).slice(2, 9),
-      ws,
-      emit: (type, payload) =>  ws?.send?.(JSON.stringify({ type, payload })),
+      emit
     }
 
     onConnection(session)
@@ -23,8 +26,8 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
     sessions.set(session.id, session)
 
     ws.on(MESSAGE, (data) => {
-      const d = JSON.parse(data)
-      onMessage({ session, type: d?.type, payload: d?.payload })    
+      const { type, payload } = JSON.parse(data) ?? {}
+      onMessage(session, { type, payload })
     })
 
     ws.on(CLOSE, () => onDisconnect(session));

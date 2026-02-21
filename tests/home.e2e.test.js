@@ -32,11 +32,12 @@ export const HOME_TESTS = {
     },
   shouldBlockUnknownAction: {
     setup: (client) => client.send('unknown', {}),
-    expression: (client) => 
-      client.error?.type === 'ACTION_NOT_ALLOWED'
-      && client.error?.action === 'unknown'
-      && client.error?.allowedActions?.length === 1
-      && client.error?.allowedActions?.includes('solo'), 
+    expression: (client) =>
+      client.error?.context === 'home' 
+      && client.error?.payload?.type === 'ACTION_NOT_ALLOWED'
+      && client.error?.payload?.action === 'unknown'
+      && client.error?.payload?.allowedActions?.length === 1
+      && client.error?.payload?.allowedActions?.includes('solo'), 
     message: 'Action unknown should be blocked'
   },
 }

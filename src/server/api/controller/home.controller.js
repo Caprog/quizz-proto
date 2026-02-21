@@ -14,7 +14,7 @@ export default {
         })
     },
 
-    handle(_context,type, _payload) {
+    handle({ emit }, { type }) {
         const handlers = {
             solo: CONTEXTS.GAME
         }

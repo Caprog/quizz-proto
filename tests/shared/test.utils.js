@@ -14,6 +14,7 @@ export class TestClient {
     connect() {
         const messageHandler = WebSocketRouter(
             (data) => {
+                console.log('onMessage', data)
                 this.state = data
             }, 
             (error) => {
@@ -36,7 +37,7 @@ export class TestClient {
         if(!opt) throw new Error('No expression provided')
         const { expression, message, retry = 10, timeout = 200 } = opt
         await waiting(() => expression?.(this), retry, timeout)
-        assert.ok(expression?.(this), message)
+        assert.ok(expression?.(this), JSON.stringify({message, state: this.state }))
         return this
     }
 
@@ -44,14 +45,8 @@ export class TestClient {
         if(!opt) throw new Error('No expression provided')
         const { setup, ...rest } = opt
         await setup?.(this)
+        await new Promise(resolve => setTimeout(resolve, 100))
         return this.evaluate(rest)
-    }
-
-    async evaluateAll(opts) {
-        for (const opt of opts) {
-            await this.evaluate(opt)
-        }
-        return this
     }
 
     async executeAll(opts) {

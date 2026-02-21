@@ -7,6 +7,7 @@ export const connect = (url, onMessage) => {
 
   const send = (type, payload) => {
     if (isReady()) {
+      console.log('send', type, payload)
       ws.send(JSON.stringify({ type, payload }))
     }
   }
