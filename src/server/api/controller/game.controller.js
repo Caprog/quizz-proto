@@ -5,12 +5,11 @@ import { QuestionService } from "../service/question.service.js"
 import { FeedbackPhase } from "../service/game/feedback.state.js"
 import { StateMachine } from "../../core/state.machine.js"
 import { ScorePhase } from "../service/game/score.state.js"
-import { SimpleActionGuard } from "../guards/action.guard.js"
+import { ActionGuard } from "../guards/action.guard.js"
 
 const games = new Map()
 
 const { QUESTION, FEEDBACK, SCORE, END } = PHASES
-
 
 const STATES = {
   [QUESTION]: QuestionPhase,
@@ -19,24 +18,8 @@ const STATES = {
   [END]: {}
 }
 
-const TRANSITIONS = {
-  [QUESTION]: {
-    target: FEEDBACK,
-    guard: (state) => state.me.confirmed === true
-  }
-}
-
 const ACTIONS = {
-  [QUESTION]: {
-    select: { type: 'select' },
-    confirm: { type: 'confirm' },
-    leave: { type: 'leave' }
-  },
-
-  [FEEDBACK]: {
-    next: { type: 'next' },
-    leave: { type: 'leave' }
-  }
+  'leave': { type: 'leave', target: CONTEXTS.HOME }
 }
 
 export default {
@@ -48,14 +31,11 @@ export default {
       machine,
       state: {
         game: {
-          type: 'solo',
-          phase: QUESTION,
           questions: QuestionService.getRandomQuestions(3),
           currentQuestionIndex: 0
         },
         me: {
-          score: 0,
-          actions: ACTIONS[QUESTION]
+          score: 0
         } 
       } 
     })
@@ -65,52 +45,54 @@ export default {
 
   async view({ id }) {
     const game = games.get(id)
-    if (!game) return
-
+    const { data, actions } = await game.machine.view(game.state) ?? {}
     return {
       context: 'game',
       
       game: {
+        type: 'solo',
         phase: game.machine.currentState,
-        data: await game.machine.view(game.state),
+        data,
       },
 
       me: {
         ...game.state.me,
-        actions: ACTIONS[game.machine.currentState]
+        actions: {
+          ...ACTIONS,
+          ...actions
+        }
       }
     }
   },
 
 
   guards: [
-    // check game exists or error
-    (context, { type }) => {
-      const game = games.get(context.id)
-      if (!game) return {
-        type: 'GAME_NOT_FOUND',
-        id: context.id
-      }
+    // check id
+    ({ id }) => !id && {
+      type: 'INVALID_GAME_ID',
+      id
     },
+    // check game exists or error
+    ({ id }) => !games.get(id) && {
+        type: 'GAME_NOT_FOUND',
+        id
+      },
     // check actions
-    (context, { type }) => {
-      const game = games.get(context.id)
-      if (!game) return
-      return SimpleActionGuard(Object.keys(game.state.me?.actions))(context, { type })
-    }
+    ({ id }, { type }) => ActionGuard(games.get(id).state.me)({ id }, { type })
   ],
 
   async handle({ id, emit }, { type, payload }) {
-    if(!id) return
-    
     const game = games.get(id)
-    if (!game) return
 
-    if (type === 'leave') return CONTEXTS.HOME
+    const target = ACTIONS[type]?.target
+    if(target) return target
 
-    await game.machine.send(game.state, { type, payload })
+    const result = await game.machine.send(game.state, { type, payload })
+    if(result) return result
+  },
 
-    if(game.state.game.phase === END) return CONTEXTS.HOME
+  next: {
+    [CONTEXTS.HOME] : ({ id }) => games.get(id)?.state?.game.phase === END 
   },
 
   exit({ id }) {

@@ -26,8 +26,15 @@ const exit = (context) => {}
 
 const view = ({ game, me }) => {
     return {
-        text: game.currentQuestion.question,
-        options: game.currentQuestion.options
+        data: {
+            text: game.currentQuestion.question,
+            options: game.currentQuestion.options
+        },
+
+        actions: {
+            select: { type: 'select' },
+            confirm: { type: 'confirm' }
+        }
     }
 }
 

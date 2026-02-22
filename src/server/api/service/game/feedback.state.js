@@ -24,7 +24,9 @@ const exit = (context) => {}
 
 const view = ({ game, me }) => {
     return {
-        
+        data: {
+            
+        }
     }
 }
 
