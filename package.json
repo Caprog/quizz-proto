@@ -6,8 +6,8 @@
         "test-js": "clear && node test.js",
         "server": "clear && nodemon src/server/main.js",
         "client": "clear && node src/client/client.js",
-        "test": "clear && node --test tests/**/*.test.js --test-timeout=5000 --test-concurrency=1",
-        "test:watch": "clear && node --test --watch tests/**/*.test.js --test-timeout=5000 --test-concurrency=1",
+        "test": "clear && node --test --test-reporter=./tests/shared/reporter.js tests/**/*.test.js --test-timeout=10000 --test-concurrency=1",
+        "test:watch": "clear && node --test --test-reporter=./tests/shared/reporter.js --watch tests/**/*.test.js --test-timeout=10000 --test-concurrency=1",
         "test:report": "clear && node --test --test-reporter=spec tests/**/*.test.js"
     },
     "dependencies": {

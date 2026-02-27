@@ -7,27 +7,31 @@ export class TestClient {
 
     state = {}
     error = null
+    dataHistory = []
+    messages = []
     send = null
     isReady = null
     performClose = null
 
     connect() {
         const messageHandler = WebSocketRouter(
-            (data) => {
-                console.log('onMessage', data)
-                this.state = data
+            (data) => { 
+                this.dataHistory.push(data)
+                this.state = data 
             }, 
-            (error) => {
-                this.error = error
-            }
+            (error) => { this.error = error },
+            () => { this.performClose() }
         )
 
         const { send, isReady, close } = connect(
             WS_URL, 
-            messageHandler.onmessage
+            messageHandler
         )
 
-        this.send = send
+        this.send = (type, payload) => {
+            this.messages.push({ type, payload })
+            send(type, payload) 
+        }
         this.isReady = isReady
         this.performClose = close
         return this
@@ -37,7 +41,13 @@ export class TestClient {
         if(!opt) throw new Error('No expression provided')
         const { expression, message, retry = 10, timeout = 200 } = opt
         await waiting(() => expression?.(this), retry, timeout)
-        assert.ok(expression?.(this), JSON.stringify({message, state: this.state }))
+        assert.ok(expression?.(this), JSON.stringify({
+            message,
+            state: this.state ?? {},
+            error: this.error ?? {},
+            messages: this.messages ?? [],
+            dataHistory: this.dataHistory ?? []
+        }, null, 2))
         return this
     }
 
@@ -75,3 +85,5 @@ const waiting = async (evaluate, retry = 10, timeout = 200) => {
     await new Promise(resolve => setTimeout(resolve, timeout))
     await waiting(evaluate, retry - 1, timeout)
 }
+
+export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))

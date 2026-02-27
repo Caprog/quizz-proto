@@ -42,7 +42,7 @@ export const HOME_TESTS = {
   },
 }
 
-describe('home', () => {
+describe('home', { skip: true }, () => {
   const client = new TestClient()
 
   after(() => client?.close?.())

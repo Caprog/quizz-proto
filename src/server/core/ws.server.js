@@ -12,8 +12,15 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
 
   wss.on(CONNECTION, (ws) => {
 
-    const emit = (type, payload) =>  {
+    const emit = ({ id, type, payload }) =>  {
         console.log('emit', type, payload)
+
+        if(id) {
+          const session = sessions.get(id)
+          session?.emit?.({ type, payload })
+          return
+        }
+
         ws?.send?.(JSON.stringify({ type, payload }))
     }
 

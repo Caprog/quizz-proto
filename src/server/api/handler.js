@@ -1,42 +1,22 @@
-import GameController from "./controller/game.controller.js";
-import HomeController from "./controller/home.controller.js";
-import { CONTEXTS } from "../../shared/contants.shared.js";
-import { StateMachine } from "../core/state.machine.js";
+import gameService from "./features/shared/game.service.js"
 
-const { HOME, GAME } = CONTEXTS
-
-const ContextHandlers = {
- [HOME]: HomeController,
- [GAME]: GameController
+const onMessage = async (session, { type, payload }) => {
+  gameService.findByPlayerId(session.id)
+    ?.handle(session.id, { type, payload })
 }
 
-const machines = new Map()
-
-const onMessage = async (context, { type, payload }) => {
-  const machine = machines.get(context.id)
-  console.log('onMessage', type, payload)
-  console.log('currentState', machine.currentState)
-  const result = await machine.send(context, { type, payload })
- 
-  if (result) {
-    context.emit('error', {
-      context: machine.currentState,
-      payload: result,
-    })
-    return
-  }
-  
-  context.emit('sync', await machine.view(context)) 
+const onConnection = async (session) => {
+  gameService.findAvailableGameOrReconnect({ 
+    playerId: session.id,
+    type: 'TRIVIA',
+    emit: (args) => session.emit(args)
+  })
 }
 
-const onConnection = async (context) => {
-  const machine = new StateMachine(ContextHandlers, HOME)
-  machine.transition(context, HOME)
-  machines.set(context.id, machine)
-  context.emit('sync', await machine.view(context)) 
+const onDisconnect = (session) => {
+  gameService.findByPlayerId(session.id)
+    ?.disconnect(session.id)
 }
-
-const onDisconnect = () => {}
 
 export {
   onConnection,
