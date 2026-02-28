@@ -1,3 +1,30 @@
+:root {
+  --bg-main: #171616;
+  --bg-dark: #000;
+  --bg-alt: #141414;
+  --bg-world: #e0e0e0;
+  --bg-button: #1a1a1a;
+  --bg-overlay: rgba(20, 20, 20, 0.83);
+  
+  --text-primary: #fff;
+  --text-secondary: #dcdcdc;
+  --text-dark: #2d2d2d;
+  --text-body: #2d2d2d; /* Consolidated from #292929 */
+  --text-muted: #dcdcdc;
+  
+  
+  --border-dark: #2d2d2d;
+  --border-gray: #333;
+  --border-white: #fff;
+  
+  --white: #fff;
+  --black: #000;
+  --error: #ff5e5e;
+  
+  --shadow-retro: 0.6cqw 0.6cqw 0 rgba(255, 255, 255, 0.2);
+  --shadow-label: 0.35cqmin 0.35cqmin 0 var(--black);
+}
+
 /* add minimalist basic style in css classic */
 @font-face {
   font-family: 'Press Start 2P';
@@ -13,8 +40,8 @@
 */
 
 body {
-    color: #292929;
-    background-color: #171616;
+    color: var(--text-body);
+    background-color: var(--bg-main);
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -56,12 +83,12 @@ body {
 
 .world {
   overflow: hidden;
-  background-color: antiquewhite;
+  background-color: var(--bg-world);
 }
 
 .floor {
   position: absolute;
-  background-color: #2d2d2d;
+  background-color: var(--border-dark);
   transform: translate3d(0, calc(56.25cqw * 0.89), 0);
   width: 100cqw;
   height: 10cqw;
@@ -70,7 +97,7 @@ body {
 .actor {
   width: 8cqmin;
   height: 6.8cqmin;
-  border: 0.4cqmin solid #2d2d2d;
+  border: 0.4cqmin solid var(--border-dark);
   box-sizing: border-box; 
   position: absolute;
   overflow: visible !important;
@@ -83,21 +110,21 @@ body {
 }
 
 .actor .eyes .eye {
- width: 1.1cqmin;
- height: 1.1cqmin;
- background-color: #2d2d2d;
+  width: 1.1cqmin;
+  height: 1.1cqmin;
+  background-color: var(--border-dark);
 }
 
 .stair {
   position: absolute;
   width: 8cqmin;
   height: 2cqmin;
-  background-color: #2d2d2d;
+  background-color: var(--border-dark);
 }
 
 .text {
   position: absolute;
-  color: #2d2d2d;
+  color: var(--text-dark);
   white-space: nowrap;
   pointer-events: none;
   
@@ -107,7 +134,6 @@ body {
   justify-content: center;
 
   box-sizing: border-box;
-  color: #2d2d2d;
   padding: 1cqmin 1.2cqmin;
 }
 
@@ -129,12 +155,12 @@ body {
 }
 
 .you-label, .bot-label {
-    background: #141414;
-    color: #dcdcdc;
+    background: var(--bg-alt);
+    color: var(--text-muted);
     padding: 0.4cqmin 0.8cqmin;
     font-size: 0.8cqw;
-    border: 0.2cqmin solid #000;
-    box-shadow: 0.35cqmin 0.35cqmin 0 #000;
+    border: 0.2cqmin solid var(--black);
+    box-shadow: var(--shadow-label);
 }
 
 .pointer-arrow {
@@ -142,8 +168,8 @@ body {
     height: 0;
     border-left: 0.8cqmin solid transparent;
     border-right: 0.8cqmin solid transparent;
-    border-top: 1.2cqmin solid #141414;
-    filter: drop-shadow(0.35cqmin 0.35cqmin 0 #000);
+    border-top: 1.2cqmin solid var(--bg-alt);
+    filter: drop-shadow(0.35cqmin 0.35cqmin 0 var(--black));
 }
 
 @keyframes botMarker {
@@ -167,7 +193,7 @@ body {
   #####################################
 */
 h1 {
-  color: #fff;
+  color: var(--white);
   line-height: 8cqmin;
   letter-spacing: 0.8cqmin;
   text-align: center;
@@ -182,14 +208,14 @@ h1 {
   align-items: center;
   width: 100%;
   height: 100%;
-  background-color: #141414d4;
+  background-color: var(--bg-overlay);
 }
 
 .style-retro {
-    background: #fff;
-    color: #000;
-    border: 0.5cqw solid #000;
-    box-shadow: 0.6cqw 0.6cqw 0 #ffffffa8;
+    background: var(--white);
+    color: var(--black);
+    border: 0.5cqw solid var(--black);
+    box-shadow: var(--shadow-retro);
     padding: 1.5cqw 3cqw;
     font-size: 1.5cqw;
 }
@@ -203,10 +229,10 @@ h1 {
 }
 
 button {
-    color: #2d2d2d;
+    color: var(--text-dark);
     cursor: pointer;
     padding: 0.5cqw 1cqw;
-    border: 0.1cqw solid #2d2d2d;
+    border: 0.1cqw solid var(--border-dark);
 }
 
 
@@ -235,18 +261,18 @@ button {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 65cqw;
-    background: #000;
-    border: 0.6cqw solid #fff;
+    background: var(--bg-dark);
+    border: 0.6cqw solid var(--border-white);
     padding: 3cqw;
     z-index: 1000;
     display: flex;
     flex-direction: column;
     gap: 2cqw;
-    box-shadow: 2cqw 2cqw 0 rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-retro);
 }
 
 .title-quiz {
-    color: #fff;
+    color: var(--text-primary);
     text-align: center;
     line-height: 1.4;
     font-size: 1.8cqw;
@@ -261,9 +287,9 @@ button {
 }
 
 .btn-option {
-    background: #1a1a1a;
-    border: 0.4cqw solid #333;
-    color: #fff;
+    background: var(--bg-button);
+    border: 0.4cqw solid var(--border-gray);
+    color: var(--text-primary);
     padding: 1.5cqw;
     text-align: left;
     font-size: 1cqw;
@@ -272,9 +298,9 @@ button {
 }
 
 .btn-option:hover:not(:disabled) {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--border-white);
 }
 
 .btn-option:disabled {
@@ -283,16 +309,16 @@ button {
 }
 
 .btn-option.selected {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--border-white);
 }
 
 .timer-container {
     width: 100%;
     height: 1.2cqw;
-    background: #1a1a1a;
-    border: 0.3cqw solid #333;
+    background: var(--bg-button);
+    border: 0.3cqw solid var(--border-gray);
     margin-top: 1cqw;
     position: relative;
     overflow: hidden;
@@ -301,13 +327,13 @@ button {
 .timer-bar {
     height: 100%;
     width: 100%;
-    background: #fff;
+    background: var(--white);
     transition: width 0.1s linear;
 }
 
 .feedback-modal {
     text-align: center;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .feedback-status {
@@ -316,7 +342,7 @@ button {
 }
 
 .feedback-correct {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.2cqw;
     opacity: 0.8;
 }
