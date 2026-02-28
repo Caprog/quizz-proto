@@ -116,10 +116,6 @@ export class UILayer {
         this.el.innerHTML = `
         <div class="modal-quiz">
             <div class="feedback-modal">
-                <div class="feedback-status" style="color: ${isCorrect ? 'var(--white)' : 'var(--error)'}">
-                    ${isCorrect ? 'CORRECT !' : 'MAUVAIS !'}
-                </div>
-                <h1 class="title-quiz">${data.question}</h1>
                 <div class="feedback-correct">
                     La réponse était : ${data.correctAnswer}
                 </div>

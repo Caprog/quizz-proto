@@ -39,11 +39,15 @@ const findAvailableGameOrReconnect = async (args) => {
 
     game = games
         .values()
-        .find(game => game.canJoin(args.playerId, args.isBot)) 
+        .find(game => game.state !== 'game_over' && game.canJoin(args.playerId, args.isBot)) 
 
     if(!game) {
         if(args.isBot) return
         game = await createAndGet(args)
+    }
+
+    if (matchmaking.has(args.playerId) && matchmaking.get(args.playerId) !== game.config.room_code) {
+        // Player was in another game, update matchmaking
     }
 
     game.join(args.playerId, args.isBot)
@@ -52,6 +56,20 @@ const findAvailableGameOrReconnect = async (args) => {
 
     return game
 }
+
+// Cleanup stale games every minute
+setInterval(() => {
+    for (const [code, game] of games.entries()) {
+        if (game.state === 'game_over') {
+            console.log(`Cleaning up game ${code}`)
+            games.delete(code)
+            // Optional: clear matchmaking for players in this game
+            for (const [pid, rcode] of matchmaking.entries()) {
+                if (rcode === code) matchmaking.delete(pid)
+            }
+        }
+    }
+}, 60000)
 
 const findByRoomCode = (room_code) => {
     return games.get(room_code)

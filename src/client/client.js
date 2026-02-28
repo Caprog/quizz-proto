@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { SOCKET_EVENTS } from '../shared/contants.shared';
+import { SOCKET_EVENTS } from '../shared/contants.shared.js';
 
 const { MESSAGE, CLOSE, ERROR } = SOCKET_EVENTS
 

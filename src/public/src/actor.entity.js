@@ -17,6 +17,7 @@ export class Actor {
 
     draw(){
         this.el.style.visibility = this.enabled ? 'visible' : 'hidden'
+        this.el.style.opacity = this.enabled ? '1' : '0'
         this.el.style.transform = this.getTransform()
     }
 }

@@ -9,6 +9,8 @@ export class TriviaBot {
     }
 
     onMessage({ type, payload }, { send, close }) {
+        if (this.isRetired) return
+
         if (type === 'sync') {
             if (payload.game.phase === 'question') {
                  if (!payload.me?.selectedAnswer && !this.selectedAnswer) {
@@ -29,6 +31,7 @@ export class TriviaBot {
 
             if (payload.game.phase === 'game_over') {
                 console.log(`Bot ${this.id} reached game over, disconnecting...`)
+                this.isRetired = true
                 close?.()
             }
         }

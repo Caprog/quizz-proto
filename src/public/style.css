@@ -101,6 +101,7 @@ body {
   box-sizing: border-box; 
   position: absolute;
   overflow: visible !important;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .actor .eyes {
@@ -120,6 +121,7 @@ body {
   width: 8cqmin;
   height: 2cqmin;
   background-color: var(--border-dark);
+  transition: opacity 0.4s ease-out;
 }
 
 .text {
@@ -357,4 +359,23 @@ button {
     40% { transform: translate(calc(-50% + 1cqw), calc(-50% - 0.5cqw)) }
     60% { transform: translate(calc(-50% - 0.5cqw), calc(-50% + 0.5cqw)) }
     80% { transform: translate(calc(-50% + 0.5cqw), calc(-50% - 0.5cqw)) }
+}
+
+/* Tick Animation */
+.tick-simple {
+    position: absolute;
+    top: -16cqmin;
+    left: 4cqmin; /* Center of the avatar which is 8cqmin wide */
+    transform: translateX(-50%);
+    color: var(--black);
+    font-size: 5cqmin;
+    text-shadow: 0.4cqmin 0.4cqmin 0 var(--white);
+    pointer-events: none;
+    z-index: 100;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }

@@ -34,26 +34,26 @@ export class World {
         world.innerHTML = '<div class="floor"></div>'
 
         for (let i = 0; i < slots_count; i++) {
+            const slotX = x * i + margin + actorWidth / 2
+            this.slots[i] = { x: slotX, y, stairs: [] }
+
             for(let h = 0; h < staires; h++) {
-                const stair = new Actor('stair',
-                    { 
-                        x: x * i + margin + actorWidth / 2, 
-                        y: y + (actorWidth / 1.2) - h * (actorWidth / 2),
-                        enabled: false
-                    })
-        
+                const stair = new Actor('stair', { 
+                    x: slotX, 
+                    y: y + (actorWidth * 1.5) - h * (actorWidth / 2),
+                    enabled: false
+                })
                 this.objects.push(stair)
+                this.slots[i].stairs.push(stair)
                 world.appendChild(stair.el)
-            }
-        
-            this.slots[i] = {
-                x: x * i + margin + actorWidth / 2, 
-                y
             }
         }
     }
 
-    handle({ players, me }){
+    handle({ game, players, me }){
+        const phaseChanged = this.lastPhase !== game?.phase
+        this.lastPhase = game?.phase
+
         if(!this.players[me?.id]){
             this.players[me?.id] = new Player({ 
                 x: this.slots[0].x, 
@@ -61,23 +61,72 @@ export class World {
                 isYou: true, 
                 name: me?.name
             })
+            this.players[me?.id].slotIndex = 0
             this.objects.push(this.players[me?.id])
             this.el.appendChild(this.players[me?.id].el)
         }
 
-        Object.entries(players ?? {})?.forEach(([id, p], idx) => {
-            if(id === me?.id) return
+        // actorWidth is already defined in the upper scope of the file
+        const stepHeight = actorWidth / 2
 
-            if(!this.players[id]) {
-                this.players[id] = new Player({ 
-                    x: this.slots[idx].x, 
-                    y: this.slots[idx].y,
-                    isBot: p?.isBot,
-                    name: p?.name
+        const updateScores = () => {
+            const updatePlayer = (player, data) => {
+                if (!player || player.slotIndex === undefined) return
+                player.setScore(data.score)
+                player.showTick(game.phase === 'feedback' && data.gainedPoints > 0)
+
+                const stepsReached = data.score
+                this.slots[player.slotIndex].stairs.forEach((stair, i) => {
+                    stair.enabled = i < stepsReached
                 })
+            }
+
+            updatePlayer(this.players[me.id], me)
+            Object.entries(players ?? {}).forEach(([id, p]) => {
+                updatePlayer(this.players[id], p)
+            })
+        }
+
+        // Delay climb if entering feedback phase
+        if (game?.phase === 'feedback') {
+            if (phaseChanged) {
+                this.feedbackClimbScheduled = true
+                setTimeout(() => {
+                    updateScores()
+                    this.feedbackClimbScheduled = false
+                }, 1500)
+            } else if (!this.feedbackClimbScheduled) {
+                updateScores()
+            }
+        } else {
+            this.feedbackClimbScheduled = false
+            updateScores()
+            if (phaseChanged) {
+                // Hide ticks when leaving feedback
+                this.players[me.id]?.showTick(false)
+                Object.values(this.players).forEach(p => p.showTick(false))
+            }
+        }
+
+        this.players[me.id].name = me.name
+        let otherIdx = 1
+        Object.entries(players ?? {}).forEach(([id, p]) => {
+            if(id === me.id) return
+            if(!this.players[id]) {
+                const slotIndex = otherIdx++
+                this.players[id] = new Player({ 
+                    x: this.slots[slotIndex].x, 
+                    y: this.slots[slotIndex].y,
+                    isBot: p.isBot,
+                    name: p.name
+                })
+                this.players[id].slotIndex = slotIndex
                 this.objects.push(this.players[id])
                 this.el.appendChild(this.players[id].el)
+            } else {
+                otherIdx++
             }
+            this.players[id].name = p.name
         })
     }
 

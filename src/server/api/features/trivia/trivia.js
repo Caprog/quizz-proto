@@ -46,6 +46,8 @@ export class Trivia {
             id: playerId, 
             connected: true, 
             isBot,
+            score: 0,
+            gainedPoints: 0,
             name: isBot 
                 ? this.getNotRepeatName(MEKERSA_HATE_LIST)
                 : this.getNotRepeatName(DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF) 
@@ -113,7 +115,9 @@ export class Trivia {
                         connected: p.connected, 
                         confirmed: p.confirmed, 
                         isBot: p.isBot,
-                        name: p.name
+                        name: p.name,
+                        score: p.score ?? 0,
+                        gainedPoints: p.gainedPoints ?? 0
                      } }), {}),
 
             game: {
@@ -138,7 +142,6 @@ export class Trivia {
         Object.values(this.players).forEach(player => {
             player.selectedAnswer = null
             player.confirmed = false
-            player.score = 0
         })
     }
 
@@ -166,7 +169,7 @@ export class Trivia {
 
     enterFeedback() {
         Object.values(this.players).forEach(player => {
-            player.gainedPoints = player?.selectedAnswer === this.data?.correctAnswer ? 10 : 0
+            player.gainedPoints = player?.selectedAnswer === this.data?.correctAnswer ? 1 : 0
             player.score += player.gainedPoints
         })
     }

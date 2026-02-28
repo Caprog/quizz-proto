@@ -62,8 +62,8 @@ const setup = () => {
     activeConnection?.close()
     world.reset()
     uiLayer.reset()
-    uiLayer.hideMainMenu()
     startMatch()
+    uiLayer.hideMainMenu()
   }
   // request animation frame for draw
   const update = () => {
