@@ -5,7 +5,8 @@ const SOCKET_EVENTS = {
     CONNECTION: 'connection',
     MESSAGE: 'message',
     CLOSE: 'close',
-    LISTENING: 'listening'
+    LISTENING: 'listening',
+    RELOAD: 'reload'
 }
 
 const SCOPES = {

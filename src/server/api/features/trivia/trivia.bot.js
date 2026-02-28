@@ -8,16 +8,10 @@ export class TriviaBot {
 
     onMessage({ type, payload }, { send }) {
         if (type === 'sync') {
-            
-            if (payload.context === 'home') {
-                send('solo')
-                return
-            }
-
             if (payload.game.phase === 'question') {
-                send('select', payload.game.data.options[0].value)
-                send('confirm')
-                return
+                // send('select', payload.game.data.options[0].value)
+                // send('confirm')
+                // return
             }
         }
     }

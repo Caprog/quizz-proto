@@ -29,3 +29,11 @@ export const DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF = [
   'LoadingBeep_Hero', 'Amiga500_Power', 'Casualbox_Dev', 'LuaWizard_GC', 'Pico8_Master', 
   'UnJeuParSemaine', 'AOZ_Enjoyer'
 ]
+
+export const MEKERSA_HATE_LIST = [
+  'UsineAGaz', 'DevMou', 'FanUnity', 'FanUnreal', 'TutoHell',
+  'AntiKISS', 'Bof', 'CestNul', 'GrosMoteur', 'ZeroCode',
+  'Gourou', 'HypeBoy', 'ViteFait', 'Paresseux', 'Noob',
+  'Lourd', 'Vide', 'Mou', 'Flou', 'PasDeDoc',
+  'AntiSimple', 'Reveur'
+]

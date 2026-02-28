@@ -1,18 +1,239 @@
 /* add minimalist basic style in css classic */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('./assets/Press_Start_2P/PressStart2P-Regular.ttf');
+}
+
+/* 
+  #####################################
+  #####################################
+  ############# GENERAL CSS ###########
+  #####################################
+  #####################################
+*/
 
 body {
     color: #292929;
-    background-color: #e5e5e5;
+    background-color: #171616;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/*  Font Definitions */
+* {
+  font-family: 'Press Start 2P';
+}
+
+.container {
+  container-type: size;
+  width: 100vw;
+  height: 56.25vw;
+  overflow: hidden;
+}
+
+.child-layer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  aspect-ratio: 16/9;
+  container-type: size;
+  width: min(100dvw, calc(100dvh * 16 / 9));
+  height: auto;
+}
+
+
+/* 
+  #####################################
+  #####################################
+  ############# WORLD CSS #############
+  #####################################
+  #####################################
+*/
+
+
+.world {
+  overflow: hidden;
+  background-color: antiquewhite;
+}
+
+.floor {
+  position: absolute;
+  background-color: #2d2d2d;
+  transform: translate3d(0, calc(56.25cqw * 0.89), 0);
+  width: 100cqw;
+  height: 10cqw;
+}
+
+.actor {
+  width: 8cqmin;
+  height: 6.8cqmin;
+  border: 0.4cqmin solid #2d2d2d;
+  box-sizing: border-box; 
+  position: absolute;
+  overflow: visible !important;
+}
+
+.actor .eyes {
+ padding: 2cqmin 1.5cqmin;
+ display: flex;
+ justify-content: space-between;
+}
+
+.actor .eyes .eye {
+ width: 1.1cqmin;
+ height: 1.1cqmin;
+ background-color: #2d2d2d;
+}
+
+.stair {
+  position: absolute;
+  width: 8cqmin;
+  height: 2cqmin;
+  background-color: #2d2d2d;
+}
+
+.text {
+  position: absolute;
+  color: #2d2d2d;
+  white-space: nowrap;
+  pointer-events: none;
+  
+  width: max-content;
+  
+  display: flex;
+  justify-content: center;
+
+  box-sizing: border-box;
+  color: #2d2d2d;
+  padding: 1cqmin 1.2cqmin;
+}
+
+.you-marker, .bot-marker {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.you-marker {
+  animation: bouncePointer 0.8s infinite alternate;
+}
+
+.bot-marker {
+  opacity: 0.5;
+  animation: botMarker 0.8s infinite alternate;
+}
+
+.you-label, .bot-label {
+    background: #141414;
+    color: #dcdcdc;
+    padding: 0.4cqmin 0.8cqmin;
+    font-size: 0.8cqw;
+    border: 0.2cqmin solid #000;
+    box-shadow: 0.35cqmin 0.35cqmin 0 #000;
+}
+
+.pointer-arrow {
+    width: 0;
+    height: 0;
+    border-left: 0.8cqmin solid transparent;
+    border-right: 0.8cqmin solid transparent;
+    border-top: 1.2cqmin solid #141414;
+    filter: drop-shadow(0.35cqmin 0.35cqmin 0 #000);
+}
+
+@keyframes botMarker {
+    from { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
+    to { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
+}
+
+@keyframes bouncePointer {
+    from { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
+    to { transform: translateX(calc(2.1cqw - 50%)) translateY(-14.2cqmin) }
+}
+
+
+
+
+/* 
+  #####################################
+  #####################################
+  ############# UI CSS ################
+  #####################################
+  #####################################
+*/
+h1 {
+  color: #fff;
+  line-height: 8cqmin;
+  letter-spacing: 0.8cqmin;
+  text-align: center;
+  font-size: 6cqmin;
+  font-style: italic;
+}
+
+.main-menu{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #141414d4;
+}
+
+.style-retro {
+    background: #fff;
+    color: #000;
+    border: 0.5cqw solid #000;
+    box-shadow: 0.6cqw 0.6cqw 0 #ffffffa8;
+    padding: 1.5cqw 3cqw;
+    font-size: 1.5cqw;
+}
+
+#message {
+  position: absolute;
+  display: none;
+  font-size: 2.5cqmin;
+  text-align: center;
+  transform: translate(50cqmin, 10cqmin);
 }
 
 button {
-    color: #e3e2e2;
-    padding: 0.25rem 1rem;
-    background-color: #292929;
-    border-radius: 0.25rem;
+    color: #2d2d2d;
     cursor: pointer;
+    padding: 0.5cqw 1cqw;
+    border: 0.1cqw solid #2d2d2d;
 }
 
-button.secondary {
-    background-color: #1f8b40;
+
+.crt-screen {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+    background-size: 100% 0.4cqw, 0.3cqw 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.crt-screen::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 100%);
+    z-index: 1001;
+}
+
+.modal-quiz {
+    background: #fff;
+    color: #000;
+    border: 0.5cqw solid #000;
+    box-shadow: 0.6cqw 0.6cqw 0 #ffffffa8;
+    padding: 1.5cqw 3cqw;
+    font-size: 1.5cqw;
 }

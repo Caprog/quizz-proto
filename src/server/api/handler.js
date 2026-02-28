@@ -6,11 +6,16 @@ const onMessage = async (session, { type, payload }) => {
 }
 
 const onConnection = async (session) => {
-  gameService.findAvailableGameOrReconnect({ 
+  const game = await gameService.findAvailableGameOrReconnect({ 
     playerId: session.id,
+    isBot: session.isBot,
     type: 'TRIVIA',
     emit: (args) => session.emit(args)
   })
+
+  if(!game) {
+    session.close()
+  }
 }
 
 const onDisconnect = (session) => {

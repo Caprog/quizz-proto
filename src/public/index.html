@@ -5,14 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Proto</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="./style.css">  
 </head>
 
 <body>
   <!-- aspect ratio 16/9 -->
-  <div id="app" class="aspect-[16/9]">
+  <div id="app" class="container" style="user-select: none;">
+    
+    <div class="crt-screen child-layer"></div>
+
+    <div class="world child-layer"></div>
+
+    <div class="ui child-layer"></div>
+<!-- 
     <header class="relative">
         <nav class="flex gap-4">
           <button v-if="state?.data?.game" @click="close()">
@@ -29,7 +34,12 @@
         <p class="text-center inline-block">{{ timeRemaining }}</p>
         
         <section v-if="state?.data?.game?.phase === 'game_start'">
-          <p class="text-center">Your current avatar is: {{ state?.data?.me?.emoji }}</p>
+          <div class="avatar">
+            <div class="eyes">
+              <div class="eye"></div>
+              <div class="eye"></div>
+            </div>
+          </div>
         </section>
 
         <section v-if="state?.data?.game?.phase === 'lobby'">
@@ -103,8 +113,9 @@
           </button>
         </section>
       </div>
-      <pre class="text-xs">{{ state }}</pre>
     </main>
+
+    <pre v-if="state.ui.showJson" class="absolute inset-0   text-xs">{{ state }}</pre> -->
     
     
   </div>

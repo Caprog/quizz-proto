@@ -26,7 +26,9 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
 
     const session = {
       id: Math.random().toString(36).slice(2, 9),
-      emit
+      isBot: ws.protocol === 'bot-protocol',
+      emit,
+      close: () => ws.close()
     }
 
     onConnection(session)
@@ -38,7 +40,10 @@ export const initWebSocketServer = (server, { onConnection, onMessage, onDisconn
       onMessage(session, { type, payload })
     })
 
-    ws.on(CLOSE, () => onDisconnect(session));
+    ws.on(CLOSE, () => {
+      sessions.delete(session.id)
+      onDisconnect(session)
+    });
   })
 
   wss.on(LISTENING, () => {

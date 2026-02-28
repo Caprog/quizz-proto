@@ -1,3 +1,5 @@
+import { UILayer } from "./src/ui.entity.js"
+import { World } from "./src/world.entity.js"
 import { WebSocketRouter } from "/shared/client.shared.js"
 import { WS_URL } from "/shared/contants.shared.js"
 
@@ -23,69 +25,117 @@ const connect = (url, handlers) => {
   }
 }
 
-const { createApp, ref, computed } = Vue
+const setup = () => {
 
-createApp({
-  setup() {
-  const state = ref(
-    {
-      data: {},
-      error: {}
-    }
-  )
-
-  const timeRemaining = ref('00:00')
+  const world = new World()
   
-  let client = null
+  const uiLayer = new UILayer({
+    onStart: () => {
+      uiLayer.hideMainMenu()
+      uiLayer.showMessage('RECHERCHE DE JOUEURS...')
 
-  // timeoutDate is ISOString
-  const timeoutDate = computed(() => state.value?.data?.game?.timeoutDate)
-
-  setInterval(() => {
-    if (!timeoutDate.value) return
-    
-    const diff = new Date(timeoutDate.value) - new Date()
-    const totalSeconds = Math.max(0, Math.floor(diff / 1000))
-    
-    const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-    const s = (totalSeconds % 60).toString().padStart(2, '0')
-    
-    timeRemaining.value = `${m}:${s}`
-  }, 200)
-  
-  const send = (action) => {
-    client?.send?.(action?.type, action?.payload)
-  }
-
-  const close = () => {
-    state.value.data = {}
-    state.value.error = {}
-    client?.close?.()
-  }
-
-  const search = () => {
-    client = connect(WS_URL, 
-      WebSocketRouter(
-          (data) => {
-            state.value.data = data
-          },
-          (error) => {
-            state.value.error = error
-          },
-          () => {
-            state.value.data = {}
-            state.value.error = {}
-          }
+      connect(WS_URL, 
+        WebSocketRouter(
+            (data) => {
+              world.handle(data)
+              uiLayer.handle(data)
+            },
+            (error) => {
+              uiLayer.handleError(error)
+            },
+            () => {
+              world.reset()
+              uiLayer.reset()
+            }
+        )
       )
-  )
+    }
+  })
+  // request animation frame for draw
+  const update = () => {
+    world.draw()
+    uiLayer.draw()
+    requestAnimationFrame(update)
   }
-
-  return { 
-    state,
-    send,
-    timeRemaining,
-    close,
-    search
-  }
+  
+  update()
 }
-}).mount('#app')
+
+setup()
+
+// const { createApp, ref, computed } = Vue
+
+// createApp({
+//   setup() {
+//   const state = ref(
+//     {
+//       ui: {
+//         showJson: false
+//       },
+//       data: {},
+//       error: {}
+//     }
+//   )
+
+//   const timeRemaining = ref('00:00')
+  
+//   let client = null
+
+//   // timeoutDate is ISOString
+//   const timeoutDate = computed(() => state.value?.data?.game?.timeoutDate)
+
+//   setInterval(() => {
+//     if (!timeoutDate.value) return
+    
+//     const diff = new Date(timeoutDate.value) - new Date()
+//     const totalSeconds = Math.max(0, Math.floor(diff / 1000))
+    
+//     const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
+//     const s = (totalSeconds % 60).toString().padStart(2, '0')
+    
+//     timeRemaining.value = `${m}:${s}`
+//   }, 200)
+  
+//   const send = (action) => {
+//     client?.send?.(action?.type, action?.payload)
+//   }
+
+//   const close = () => {
+//     state.value.data = {}
+//     state.value.error = {}
+//     client?.close?.()
+//   }
+
+//   const search = () => {
+//     client = connect(WS_URL, 
+//         WebSocketRouter(
+//             (data) => {
+//               state.value.data = data
+//             },
+//             (error) => {
+//               state.value.error = error
+//             },
+//             () => {
+//               state.value.data = {}
+//               state.value.error = {}
+//             }
+//         )
+//     )
+//   }
+
+//   // when press space, show data modal
+//   window.addEventListener('keydown', (e) => {
+//     if (e.code === 'Space') {
+//       state.value.ui.showJson = !state.value.ui.showJson
+//     }
+//   })
+
+//   return { 
+//     state,
+//     send,
+//     timeRemaining,
+//     close,
+//     search
+//   }
+// }
+// }).mount('#app')

@@ -6,7 +6,7 @@ const startAndGet = (id, milliseconds, onEnd) => {
 
     timers[id] = setTimeout(() => {
         stop(id)
-        onEnd()
+        setImmediate(() => onEnd())
     }, milliseconds)
 
     return get(id, milliseconds)

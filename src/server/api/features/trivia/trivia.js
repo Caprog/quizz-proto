@@ -1,4 +1,4 @@
-import { DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, EMOJIS, PHASES } from "./types.js";
+import { DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, EMOJIS, MEKERSA_HATE_LIST, PHASES } from "./types.js";
 import timerService from "../../shared/timer.service.js";
 import { QuestionService } from "./question.service.js";
 
@@ -35,36 +35,52 @@ export class Trivia {
         this.sync?.()
     }
 
-    join(playerId) {
+    join(playerId, isBot) {
+        console.log('is a bot', isBot)
+        if(this.playersCount() === 0 && isBot) return
         if(!this.players[playerId] && this.state !== LOBBY) return
         if(this.playersCount() >= this.config.maxPlayers) return
         if(this.players[playerId]?.connected) return
-        
-        this.players[playerId] = { id: playerId, connected: true }
 
-        if(!this.timer) {
+        this.players[playerId] = { 
+            id: playerId, 
+            connected: true, 
+            isBot,
+            name: isBot 
+                ? this.getNotRepeatName(MEKERSA_HATE_LIST)
+                : this.getNotRepeatName(DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF) 
+         }
+
+        if(!this.timer && this.playersCount() >= this.config.maxPlayers) {
             this.timer = timerService.startAndGet(
                 this.config.room_code, 
                 this.config.matchmakingTimer, 
-                () => this.transit()
+                () => {
+                    this.transit()
+                }
             )
         }
 
-        if(this.playersCount() >= this.config.maxPlayers) {
+        if(this.playersCount() >= this.config.maxPlayers && 
+            !Object.values(this.players).every(player => player.isBot)) {
             this.timer.stop()
             this.transit()
         }
+
+        this.sync()
+    }
+
+    getNotRepeatName(names){
+        const random = () => Math.random() - 0.5
+        const copy = structuredClone(names).sort(random)
+        const name = copy.pop()
+        if(Object.values(this.players).some(player => player.name === name)) {
+            return this.getNotRepeatName(copy)
+        }
+        return name
     }
 
     enterGameStart() {
-        const emojis = [...EMOJIS].sort(() => Math.random() - 0.5)
-        const names = [...DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF].sort(() => Math.random() - 0.5)
-
-        Object.values(this.players).forEach(player => {
-            player.emoji = emojis.pop()
-            player.name = names.pop()
-        })
-
         this.data = {
             currentQuestionIndex: -1,
             questions: QuestionService.getRandomQuestions(this.config.totalQuestions)
@@ -91,7 +107,14 @@ export class Trivia {
             },
             
             players: Object.values(this.players)
-                .reduce((acc, p) => ({ ...acc, [p.id]: { connected: p.connected, confirmed: p.confirmed } }), {}),
+                .reduce((acc, p) => ({ 
+                    ...acc, 
+                    [p.id]: { 
+                        connected: p.connected, 
+                        confirmed: p.confirmed, 
+                        isBot: p.isBot,
+                        name: p.name
+                     } }), {}),
 
             game: {
               type: 'TRIVIA',

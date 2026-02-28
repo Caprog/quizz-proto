@@ -10,12 +10,12 @@ const createAndGet = async ({ playerId, type, emit } = {}) => {
     const room_code = Math.random().toString(36).substring(2, 6)
     const game = new Trivia(
             { 
-                maxPlayers: 16, 
+                maxPlayers: 8, 
                 room_code,
                 gameStartTimer: 5000,
-                matchmakingTimer: 2000,
-                feedbackTimer: 2000,
-                confirmationTimer: 2000,
+                matchmakingTimer: 5000,
+                feedbackTimer: 0,
+                confirmationTimer: 0,
                 totalQuestions: 3
             },
             { emit },
@@ -33,23 +33,32 @@ const findAvailableGameOrReconnect = async (args) => {
     }
 
     if(game) {
-        game.join(args.playerId)
+        game.join(args.playerId, args.isBot)
         return game
     }
 
     game = games
         .values()
-        .find(game => game.canJoin(args.playerId)) 
-            ?? await createAndGet(args)
+        .find(game => game.canJoin(args.playerId, args.isBot)) 
 
-    game.join(args.playerId)
+    if(!game) {
+        if(args.isBot) return
+        game = await createAndGet(args)
+    }
+
+    game.join(args.playerId, args.isBot)
 
     matchmaking.set(args.playerId, game.config.room_code)
 
     return game
 }
 
+const findByRoomCode = (room_code) => {
+    return games.get(room_code)
+}
+
 export default {
+    findByRoomCode,
     findAvailableGameOrReconnect,
     findByPlayerId: (playerId) => games.get(matchmaking.get(playerId))
 }
