@@ -34,7 +34,7 @@ const setup = () => {
       uiLayer.hideMainMenu()
       uiLayer.showMessage('RECHERCHE DE JOUEURS...')
 
-      connect(WS_URL, 
+      const connection = connect(WS_URL, 
         WebSocketRouter(
             (data) => {
               world.handle(data)
@@ -49,6 +49,8 @@ const setup = () => {
             }
         )
       )
+
+      uiLayer.send = connection.send
     }
   })
   // request animation frame for draw
