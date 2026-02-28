@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Proto - Itch.io Wrapper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #171616;
+            --text-primary: #fff;
+            --border-white: #fff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-main);
+            overflow: hidden;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--text-primary);
+        }
+
+        #loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            background-color: var(--bg-main);
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+
+        .loader-text {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.2rem;
+        }
+
+        .dot-loader {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .dot {
+            width: 1rem;
+            height: 1rem;
+            background-color: var(--border-white);
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader-container">
+        <div class="loader-text">LOADING...</div>
+        <div class="dot-loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <iframe id="game-iframe" src="https://quiz-proto.onrender.com" allow="autoplay; fullscreen"></iframe>
+
+    <script>
+        const loader = document.getElementById('loader-container')
+        const iframe = document.getElementById('game-iframe')
+
+        iframe.onload = () => {
+            // Add a slight delay to ensure smooth transition
+            setTimeout(() => {
+                loader.classList.add('hidden')
+            }, 1000)
+        }
+    </script>
+</body>
+</html>
