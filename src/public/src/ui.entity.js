@@ -47,12 +47,13 @@ export class UILayer {
 
     showQuiz(data, timeoutDate){
         if (this.currentPhase === 'question' && this.currentQuestion === data.text) {
-            this.updateTimer(timeoutDate)
+            this.timeoutDate = timeoutDate
             return
         }
 
         this.currentPhase = 'question'
         this.currentQuestion = data.text
+        this.timeoutDate = timeoutDate
         this.selectedAnswer = null
 
         this.el.innerHTML = `
@@ -83,17 +84,21 @@ export class UILayer {
                 this.onSelect(this.selectedAnswer)
             })
         })
-
-        this.updateTimer(timeoutDate)
     }
 
-    updateTimer(timeoutDate) {
+    updateTimer() {
         const timerBar = document.getElementById('timer-bar')
-        if (!timerBar || !timeoutDate) return
+        if (!timerBar || !this.timeoutDate) return
 
-        const diff = new Date(timeoutDate) - new Date()
-        const totalDuration = 10000 // Assuming 10s for now, ideally passed from server or config
-        const percent = Math.max(0, (diff / totalDuration) * 100)
+        const phaseDurations = {
+            'question': 10000,
+            'feedback': 5000,
+            // Add other phases if they use the timer bar
+        }
+        
+        const duration = phaseDurations[this.currentPhase] || 10000
+        const diff = new Date(this.timeoutDate) - new Date()
+        const percent = Math.max(0, (diff / duration) * 100)
         
         timerBar.style.width = `${percent}%`
     }
@@ -101,6 +106,7 @@ export class UILayer {
     showFeedback(data){
         if (this.currentPhase === 'feedback') return
         this.currentPhase = 'feedback'
+        this.timeoutDate = null
 
         const isCorrect = this.me?.gainedPoints > 0
         if (!isCorrect) {
@@ -110,14 +116,14 @@ export class UILayer {
         this.el.innerHTML = `
         <div class="modal-quiz">
             <div class="feedback-modal">
-                <div class="feedback-status" style="color: ${isCorrect ? '#fff' : '#ff5e5e'}">
+                <div class="feedback-status" style="color: ${isCorrect ? 'var(--white)' : 'var(--error)'}">
                     ${isCorrect ? 'CORRECT !' : 'MAUVAIS !'}
                 </div>
                 <h1 class="title-quiz">${data.question}</h1>
                 <div class="feedback-correct">
                     La réponse était : ${data.correctAnswer}
                 </div>
-                <div style="margin-top: 2cqw; font-size: 1cqw; color: #fff;">
+                <div style="margin-top: 2cqw; font-size: 1cqw; color: var(--white);">
                     Points gagnés : ${this.me?.gainedPoints}
                 </div>
             </div>
@@ -128,11 +134,12 @@ export class UILayer {
     showGameOver() {
         if (this.currentPhase === 'game_over') return
         this.currentPhase = 'game_over'
+        this.timeoutDate = null
 
         this.el.innerHTML = `
         <div class="modal-quiz">
             <h1 class="title-quiz">GAME OVER</h1>
-            <div style="text-align: center; color: #fff; font-size: 1.5cqw; margin-bottom: 2cqw;">
+            <div style="text-align: center; color: var(--white); font-size: 1.5cqw; margin-bottom: 2cqw;">
                 Score final : ${this.me?.score}
             </div>
             <button id="btn-restart" class="style-retro" style="width: 100%">
@@ -149,31 +156,20 @@ export class UILayer {
         if (this.currentPhase === 'none') return
         this.currentPhase = 'none'
         this.currentQuestion = null
-        // If we are in lobby or game_start, we might want to keep the main menu or message
-        // but the 'handle' call from client.js also triggers world.handle
+        this.timeoutDate = null
     }
 
     onSelect(value) {
         this.send?.('select', value)
-        // Auto confirm for now to match the user's reference feel (one click selection)
-        // or we could add a confirm button if needed. The reference had one-click solve?
-        // Wait, the reference code has: b.onclick = () => solve(i, data.c)
-        // It calls solve immediately. So I'll send both select and confirm if needed, 
-        // but the server handles 'confirm' separately.
-        // Let's just send 'select' for now and see. 
-        // Actually, the server's handleQuestion expects 'select' then 'confirm'.
         this.send?.('confirm')
     }
 
     onRestart() {
-        // For restart, we might need a specific message or just reload
-        window.location.reload()
+        this.onRestart?.()
     }
 
     draw() {
-        // If we want the timer to update every frame without waiting for server sync
-        // we would need to store the timeoutDate and update it here.
-        // But for now, we rely on server sync which seems frequent enough.
+        this.updateTimer()
     }
 
     handleError(error) {

@@ -33,6 +33,9 @@ const connectBot = () => {
           if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type, payload }))
           }
+        },
+        close: () => {
+          socket.terminate()
         }
       })
     } catch (err) {

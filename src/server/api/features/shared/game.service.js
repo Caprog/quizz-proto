@@ -14,8 +14,8 @@ const createAndGet = async ({ playerId, type, emit } = {}) => {
                 room_code,
                 gameStartTimer: 5000,
                 matchmakingTimer: 5000,
-                feedbackTimer: 0,
-                confirmationTimer: 0,
+                feedbackTimer: 5000,
+                confirmationTimer: 10000,
                 totalQuestions: 3
             },
             { emit },

@@ -29,30 +29,42 @@ const setup = () => {
 
   const world = new World()
   
-  const uiLayer = new UILayer({
-    onStart: () => {
-      uiLayer.hideMainMenu()
-      uiLayer.showMessage('RECHERCHE DE JOUEURS...')
+  let activeConnection = null
 
-      const connection = connect(WS_URL, 
-        WebSocketRouter(
-            (data) => {
-              world.handle(data)
-              uiLayer.handle(data)
-            },
-            (error) => {
-              uiLayer.handleError(error)
-            },
-            () => {
-              world.reset()
-              uiLayer.reset()
-            }
-        )
+  const startMatch = () => {
+    uiLayer.hideMainMenu()
+    uiLayer.showMessage('RECHERCHE DE JOUEURS...')
+
+    activeConnection = connect(WS_URL, 
+      WebSocketRouter(
+          (data) => {
+            world.handle(data)
+            uiLayer.handle(data)
+          },
+          (error) => {
+            uiLayer.handleError(error)
+          },
+          () => {
+            world.reset()
+            uiLayer.reset()
+          }
       )
+    )
 
-      uiLayer.send = connection.send
-    }
+    uiLayer.send = activeConnection.send
+  }
+
+  const uiLayer = new UILayer({
+    onStart: startMatch
   })
+
+  uiLayer.onRestart = () => {
+    activeConnection?.close()
+    world.reset()
+    uiLayer.reset()
+    uiLayer.hideMainMenu()
+    startMatch()
+  }
   // request animation frame for draw
   const update = () => {
     world.draw()
