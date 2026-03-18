@@ -1,13 +1,12 @@
-import { parentPort, workerData } from 'node:worker_threads'
 import { WebSocket } from 'ws'
-import { TriviaBot } from '../api/features/trivia/trivia.bot.js'
+import { TriviaBot } from '../api/trivia/trivia.bot.js'
 import { WS_URL } from '../../shared/contants.shared.js'
 
-const maxBots = 1
+const maxBots = 200
 let aliveBots = []
 
 const getRandomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
-const getRandom = () => getRandomBetween(2000, 8000)
+const getRandom = () => getRandomBetween(2, 1000)
 
 const connectBot = () => {
   if (aliveBots.length >= maxBots) return

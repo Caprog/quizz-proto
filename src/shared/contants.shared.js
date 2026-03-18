@@ -1,5 +1,5 @@
 const isNode = typeof process !== 'undefined' && process.versions && process.versions.node
-const PORT = isNode ? (Number(process.env.PORT) || 3000) : 3000
+const PORT = isNode ? (Number(process.env.PORT) || 4000) : 4000
 
 let WS_URL = `ws://localhost:${PORT}`
 
@@ -24,15 +24,4 @@ const SOCKET_EVENTS = {
     RELOAD: 'reload'
 }
 
-const SCOPES = {
-    BROADCAST: 'broadcast',
-    PRIVATE: 'private'
-}
-
-const CONTEXTS = {
-    HOME: 'home',
-    GAME: 'game',
-    DISCONNECT: 'disconnect'
-}
-
-export { PORT, WS_URL, SCOPES, CONTEXTS, SOCKET_EVENTS }
+export { PORT, WS_URL, SOCKET_EVENTS }

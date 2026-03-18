@@ -1,6 +1,6 @@
-import { Trivia } from "./features/trivia/trivia.js"
+import { Trivia } from "./trivia.js"
 
-let game = null
+export let game = null
 
 const onMessage = async (session, { type, payload }) => {
   game?.handle(session.id, { type, payload })
@@ -9,11 +9,11 @@ const onMessage = async (session, { type, payload }) => {
 const onConnection = async (session) => {
  if(!game) {
   game = new Trivia(
-          { 
-              totalQuestions: 10
-          },
-          { emit: (args) => session.emit(args) },
-      )
+        { 
+            questionsCount: 10
+        },
+        { emit: (args) => session.emit(args) },
+    )
  }
 
  game.join(session.id)
