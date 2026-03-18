@@ -100,8 +100,8 @@ body {
   border: 0.4cqmin solid var(--border-dark);
   box-sizing: border-box; 
   position: absolute;
+  background: var(--bg-world);
   overflow: visible !important;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .actor .eyes {
@@ -116,12 +116,79 @@ body {
   background-color: var(--border-dark);
 }
 
-.stair {
+.actors {
   position: absolute;
-  width: 8cqmin;
+  display: flex;
+  top: 0;
+  width: 100cqw;
+  height: 100cqw;
+}
+
+.stairs {
+  position: absolute;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: column;
+  gap: 3cqw;
+  width: 80cqw;
+  height: 100cqw;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+
+/* Solo hay una escalera y 11 escalones, los escalones mas bajos toman el ancho de 80% del contenedor y va bajando el ancho a medida que el escalon esta mas arriba */
+/* es al reves el orden de los escalones */
+.stair:nth-child(1) {
+  width: 8cqw;
+}
+
+.stair:nth-child(2) {
+  width: 16cqw;
+}
+
+.stair:nth-child(3) {
+  width: 24cqw;
+}
+
+.stair:nth-child(4) {
+  width: 32cqw;
+}
+
+.stair:nth-child(5) {
+  width: 40cqw;
+}
+
+.stair:nth-child(6) {
+  width: 48cqw;
+}
+
+.stair:nth-child(7) {
+  width: 56cqw;
+}
+
+.stair:nth-child(8) {
+  width: 64cqw;
+}
+
+.stair:nth-child(9) {
+  width: 72cqw;
+}
+
+.stair:nth-child(10) {
+  width: 80cqw;
+}
+
+.stair:nth-child(11) {
+  width: 88cqw;
+}
+
+.stair {
   height: 2cqmin;
   background-color: var(--border-dark);
   transition: opacity 0.4s ease-out;
+  opacity: 0.7;
 }
 
 .text {
@@ -165,6 +232,15 @@ body {
     box-shadow: var(--shadow-label);
 }
 
+.bot-label {
+    background: transparent;
+    color: var(--text-dark);
+    padding: 0.4cqmin 0.8cqmin;
+    font-size: 0.8cqw;
+    border: 0.2cqmin solid var(--black);
+    box-shadow: var(--shadow-label);
+}
+
 .pointer-arrow {
     width: 0;
     height: 0;
@@ -172,6 +248,10 @@ body {
     border-right: 0.8cqmin solid transparent;
     border-top: 1.2cqmin solid var(--bg-alt);
     filter: drop-shadow(0.35cqmin 0.35cqmin 0 var(--black));
+}
+
+.bot {
+  opacity: 0.5;
 }
 
 @keyframes botMarker {
@@ -378,4 +458,26 @@ button {
 @keyframes popIn {
     0% { transform: scale(0); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
+}
+
+
+
+/* 
+  #####################################
+  #####################################
+  ############# LAYER DEBUG ###########
+  #####################################
+  #####################################
+*/
+
+.debug {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-color: var(--bg-overlay);
+    z-index: 1000;
+    color: var(--text-primary);
+    font-family: monospace !important;
 }

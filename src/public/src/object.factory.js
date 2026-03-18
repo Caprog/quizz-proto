@@ -35,7 +35,7 @@ export default (type) => {
     if(type === 'bot-marker'){
         const el = document.createElement('div')
         el.className = 'bot-marker'
-        el.innerHTML = `<div class="bot-label">BOT</div><div class="pointer-arrow"></div>`
+        el.innerHTML = `<div class="bot bot-label">BOT</div><div class="bot pointer-arrow"></div>`
         return el
     }
 }

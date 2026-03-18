@@ -7,6 +7,15 @@ export const PHASES = {
     GAME_OVER: 'game_over'
 }
 
+export const FLOW = [
+    PHASES.LOBBY,
+    PHASES.GAME_START,
+    PHASES.QUESTION,
+    PHASES.FEEDBACK,
+    PHASES.SCORE,
+    PHASES.GAME_OVER
+]
+
 export const EMOJIS = [
     '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
     '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔',

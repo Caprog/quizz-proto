@@ -2,6 +2,7 @@ const timers = {}
 
 const startAndGet = (id, milliseconds, onEnd) => {
     console.log('startAndGet', id, milliseconds)
+    const startTime = Date.now()
     if(timers[id]) stop(id)
 
     timers[id] = setTimeout(() => {
@@ -9,15 +10,14 @@ const startAndGet = (id, milliseconds, onEnd) => {
         setImmediate(() => onEnd())
     }, milliseconds)
 
-    return get(id, milliseconds)
+    return get(id, milliseconds, startTime)
 }
 
-const get = (id, milliseconds) => {    
-    const timeoutDate = new Date(Date.now() + milliseconds).toISOString()
-
+const get = (id, milliseconds, startTime = Date.now()) => {    
     return {
         id,
-        timeoutDate,
+        duration: milliseconds,
+        getRemaining: () => Math.max(0, milliseconds - (Date.now() - startTime)),
         stop: () => stop(id)
     }
 }

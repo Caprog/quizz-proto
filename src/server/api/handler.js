@@ -1,26 +1,26 @@
-import gameService from "./features/shared/game.service.js"
+import { Trivia } from "./features/trivia/trivia.js"
+
+let game = null
 
 const onMessage = async (session, { type, payload }) => {
-  gameService.findByPlayerId(session.id)
-    ?.handle(session.id, { type, payload })
+  game?.handle(session.id, { type, payload })
 }
 
 const onConnection = async (session) => {
-  const game = await gameService.findAvailableGameOrReconnect({ 
-    playerId: session.id,
-    isBot: session.isBot,
-    type: 'TRIVIA',
-    emit: (args) => session.emit(args)
-  })
+ if(!game) {
+  game = new Trivia(
+          { 
+              totalQuestions: 10
+          },
+          { emit: (args) => session.emit(args) },
+      )
+ }
 
-  if(!game) {
-    session.close()
-  }
+ game.join(session.id)
 }
 
 const onDisconnect = (session) => {
-  gameService.findByPlayerId(session.id)
-    ?.disconnect(session.id)
+  game.leave(session.id)
 }
 
 export {

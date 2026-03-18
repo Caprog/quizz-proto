@@ -1,9 +1,11 @@
+import { mock, state } from "./src/store.js"
 import { UILayer } from "./src/ui.entity.js"
 import { World } from "./src/world.entity.js"
 import { WebSocketRouter } from "/shared/client.shared.js"
 import { WS_URL } from "/shared/contants.shared.js"
+import { subscribe } from 'https://esm.sh/valtio'
 
-const connect = (url, handlers) => {
+export const connect = (url, handlers) => {
   const ws = new WebSocket(url)
 
   ws.onmessage = (data) => handlers.onmessage?.(JSON.parse(data?.data))
@@ -28,30 +30,36 @@ const connect = (url, handlers) => {
 const setup = () => {
 
   const world = new World()
-  
   let activeConnection = null
 
   const startMatch = () => {
     uiLayer.hideMainMenu()
-    uiLayer.showMessage('RECHERCHE DE JOUEURS...')
+    // uiLayer.showMessage('RECHERCHE DE JOUEURS...')
 
-    activeConnection = connect(WS_URL, 
-      WebSocketRouter(
-          (data) => {
-            world.handle(data)
-            uiLayer.handle(data)
-          },
-          (error) => {
-            uiLayer.handleError(error)
-          },
-          () => {
-            world.reset()
-            uiLayer.reset()
-          }
-      )
-    )
+    subscribe(state, () => {
+      console.log(JSON.stringify(state.payload, null, 2))
+      world.handle(state.payload)
+      uiLayer.handle(state.payload)
+    })
 
-    uiLayer.send = activeConnection.send
+    state.payload = mock
+
+    // activeConnection = connect(WS_URL, 
+    //   WebSocketRouter(
+    //       (data) => {
+    //         state.payload = data
+    //       },
+    //       (error) => {
+    //         uiLayer.handleError(error)
+    //       },
+    //       () => {
+    //         world.reset()
+    //         uiLayer.reset()
+    //       }
+    //   )
+    // )
+
+    // uiLayer.send = activeConnection.send
   }
 
   const uiLayer = new UILayer({
@@ -74,8 +82,6 @@ const setup = () => {
   
   update()
 }
-
-setup()
 
 // const { createApp, ref, computed } = Vue
 

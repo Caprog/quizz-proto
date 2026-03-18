@@ -3,7 +3,7 @@ import { WebSocket } from 'ws'
 import { TriviaBot } from '../api/features/trivia/trivia.bot.js'
 import { WS_URL } from '../../shared/contants.shared.js'
 
-const maxBots = 10
+const maxBots = 1
 let aliveBots = []
 
 const getRandomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
@@ -12,7 +12,7 @@ const getRandom = () => getRandomBetween(2000, 8000)
 const connectBot = () => {
   if (aliveBots.length >= maxBots) return
 
-  const socket = new WebSocket(WS_URL, 'bot-protocol')
+  const socket = new WebSocket(WS_URL)
   const triviaBot = new TriviaBot()
   
   let isClosing = false
@@ -58,8 +58,6 @@ const connectBot = () => {
   })
 
   socket.on('close', (code, reason) => {
-    // If code is 1000 or similar normal closure, but happened quickly, might be "no game"
-    // However, handler.js just calls session.close() which is likely 1000 or 1005
     cleanup()
   })
   socket.on('error', (err) => {

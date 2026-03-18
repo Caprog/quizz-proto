@@ -31,7 +31,7 @@ export class UILayer {
         
         switch(game?.phase) {
             case 'question':
-                this.showQuiz(game?.data, game?.timeoutDate)
+                this.showQuiz(game?.data, game?.timer)
                 break
             case 'feedback':
                 this.showFeedback(game?.data)
@@ -45,15 +45,19 @@ export class UILayer {
         }
     }
 
-    showQuiz(data, timeoutDate){
+    showQuiz(data, timerConfig){
         if (this.currentPhase === 'question' && this.currentQuestion === data.text) {
-            this.timeoutDate = timeoutDate
+            if (timerConfig && !this.timerConfig) {
+                this.timerConfig = timerConfig
+                this.localTimerEnd = Date.now() + timerConfig.remaining
+            }
             return
         }
 
         this.currentPhase = 'question'
         this.currentQuestion = data.text
-        this.timeoutDate = timeoutDate
+        this.timerConfig = timerConfig
+        this.localTimerEnd = timerConfig ? Date.now() + timerConfig.remaining : null
         this.selectedAnswer = null
 
         this.el.innerHTML = `
@@ -88,17 +92,10 @@ export class UILayer {
 
     updateTimer() {
         const timerBar = document.getElementById('timer-bar')
-        if (!timerBar || !this.timeoutDate) return
-
-        const phaseDurations = {
-            'question': 10000,
-            'feedback': 5000,
-            // Add other phases if they use the timer bar
-        }
+        if (!timerBar || !this.localTimerEnd || !this.timerConfig) return
         
-        const duration = phaseDurations[this.currentPhase] || 10000
-        const diff = new Date(this.timeoutDate) - new Date()
-        const percent = Math.max(0, (diff / duration) * 100)
+        const diff = this.localTimerEnd - Date.now()
+        const percent = Math.max(0, (diff / this.timerConfig.duration) * 100)
         
         timerBar.style.width = `${percent}%`
     }
@@ -106,7 +103,8 @@ export class UILayer {
     showFeedback(data){
         if (this.currentPhase === 'feedback') return
         this.currentPhase = 'feedback'
-        this.timeoutDate = null
+        this.localTimerEnd = null
+        this.timerConfig = null
 
         const isCorrect = this.me?.gainedPoints > 0
         if (!isCorrect) {
@@ -130,7 +128,8 @@ export class UILayer {
     showGameOver() {
         if (this.currentPhase === 'game_over') return
         this.currentPhase = 'game_over'
-        this.timeoutDate = null
+        this.localTimerEnd = null
+        this.timerConfig = null
 
         this.el.innerHTML = `
         <div class="modal-quiz">
@@ -152,7 +151,8 @@ export class UILayer {
         if (this.currentPhase === 'none') return
         this.currentPhase = 'none'
         this.currentQuestion = null
-        this.timeoutDate = null
+        this.localTimerEnd = null
+        this.timerConfig = null
     }
 
     onSelect(value) {
