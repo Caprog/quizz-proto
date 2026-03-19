@@ -4,6 +4,12 @@ import { WS_URL } from "../shared/contants.shared.js"
 const BOTS_COUNT = 5
 const MIN_DELAY = 2000
 const MAX_DELAY = 10000
+const MIN_QUESTION_DELAY = 6000
+const MAX_QUESTION_DELAY = 10000
+const MIN_RECONNECT_DELAY = 2000
+const MAX_RECONNECT_DELAY = 5000
+
+const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
 // create 
 class Bot {
@@ -24,26 +30,36 @@ class Bot {
 
         this.ws.on('message', (data) => {
             const { type, payload } = JSON.parse(data)
-            console.log('data', { type, payload })
             if (type === 'sync') {
                 if (payload.game?.phase === 'question') {
-                    console.log('payload.game.data', payload.game.data)
-                    this.ws.send(JSON.stringify({ type: 'select', payload: payload.game.data.options[Math.floor(Math.random() * payload.game.data.options.length)].value }))
+                    setTimeout(() => {
+                        this.ws.send(
+                            JSON.stringify({
+                                type: 'select',
+                                payload: payload.game.data.options[
+                                    Math.floor(Math.random() * payload.game.data.options.length)
+                                ].value
+                            })
+                        )
+                    }, randomBetween(MIN_QUESTION_DELAY, MAX_QUESTION_DELAY))
                 }
             }
         })
 
         this.ws.on('close', () => {
             console.log('Disconnected...')
-            // retry between 2000 and 5000 ms
             setTimeout(() => {
                 console.log('Reconnecting...')
                 this.connect()
-            }, Math.floor(Math.random() * (5000 - 2000 + 1) + 2000))
+            }, randomBetween(MIN_RECONNECT_DELAY, MAX_RECONNECT_DELAY))
         })
 
-        this.ws.on('error', (error) => {
-            // console.error('Error:', error)
+        this.ws.on('error', () => {
+            try {
+                this.ws?.close?.()
+            } catch (error) {
+                // ignore
+            }
         })
     }
 }
@@ -53,5 +69,5 @@ for (let i = 0; i < BOTS_COUNT; i++) {
     setTimeout(() => {
         const bot = new Bot(i)
         bot.connect()
-    }, Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY + 1) + MIN_DELAY))
+    }, randomBetween(MIN_DELAY, MAX_DELAY))
 }

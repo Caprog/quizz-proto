@@ -1,13 +1,24 @@
-import { mock, state } from "./src/store.js"
-import { UILayer } from "./src/ui.entity.js"
-import { World } from "./src/world.entity.js"
-import { WebSocketRouter } from "/shared/client.shared.js"
-import { WS_URL } from "/shared/contants.shared.js"
+import { WS_URL } from "../shared/contants.shared.js"
+import { state } from "./src/store.js"
 import { subscribe } from 'https://esm.sh/valtio'
+import { Player } from "./src/player.entity.js"
+import { Countdown } from "./src/countdown.entity.js"
+import { PHASES } from "../shared/trivia.types.js"
+
+const messageEl = document.getElementById('message')
+const scoreEl = document.getElementById('score')
+const spawnEl = document.getElementById('spawn')
+const PLAYER_WIDTH = 4.13
+const countdown = new Countdown()
+const stairs = Array.from(document.querySelectorAll('.stair')).reverse()
+let you = null
+
+const others = []
 
 export const connect = (url, handlers) => {
   const ws = new WebSocket(url)
 
+  ws.onopen = (args) => handlers.onopen?.(args)
   ws.onmessage = (data) => handlers.onmessage?.(JSON.parse(data?.data))
   ws.onclose = (args) => handlers.onclose?.(args)
   ws.onerror = (args) => handlers.onerror?.(args)
@@ -29,133 +40,61 @@ export const connect = (url, handlers) => {
 
 const setup = () => {
 
-  const world = new World()
-  let activeConnection = null
-
-  const startMatch = () => {
-    uiLayer.hideMainMenu()
-    // uiLayer.showMessage('RECHERCHE DE JOUEURS...')
-
-    subscribe(state, () => {
-      console.log(JSON.stringify(state.payload, null, 2))
-      world.handle(state.payload)
-      uiLayer.handle(state.payload)
-    })
-
-    state.payload = mock
-
-    // activeConnection = connect(WS_URL, 
-    //   WebSocketRouter(
-    //       (data) => {
-    //         state.payload = data
-    //       },
-    //       (error) => {
-    //         uiLayer.handleError(error)
-    //       },
-    //       () => {
-    //         world.reset()
-    //         uiLayer.reset()
-    //       }
-    //   )
-    // )
-
-    // uiLayer.send = activeConnection.send
-  }
-
-  const uiLayer = new UILayer({
-    onStart: startMatch
+  subscribe(state, () => {
+    console.log(JSON.stringify(state.payload, null, 2))
   })
+  
+  const start = () => {
+    const ws = connect(WS_URL, 
+      {
+        onopen: () => {
 
-  uiLayer.onRestart = () => {
-    activeConnection?.close()
-    world.reset()
-    uiLayer.reset()
-    startMatch()
-    uiLayer.hideMainMenu()
+          if(!you) {
+            
+            you = new Player({ 
+              name: '',
+              y: -1,
+              width: PLAYER_WIDTH,
+              stairs
+            })
+
+            spawnEl.appendChild(you.el)
+          }
+
+          messageEl.textContent = 'CONNECTED TO THE RETURN TO THE SOURCE'
+        },
+        onmessage: (data) => {
+          state.payload = data?.payload
+          messageEl.textContent = state.payload?.game?.phase
+          
+          you.handle(data?.payload)
+
+          scoreEl.textContent = `Score: ${state.payload?.me?.score}`
+
+          if(state.payload?.game?.phase === PHASES.QUESTION) {
+            const options = state.payload?.game?.data?.options || []
+            const option = options[Math.floor(Math.random() * options.length)]
+            if(option) ws.send('select', option.value)   
+          }
+        },
+        onclose: () => setTimeout(start, 5000),
+        onerror: (error) => console.error(error)
+      }
+    )
   }
+
+
   // request animation frame for draw
   const update = () => {
-    world.draw()
-    uiLayer.draw()
+    others?.forEach(other => other?.draw())
+    you?.draw()
+    countdown.update()
     requestAnimationFrame(update)
   }
   
   update()
+
+  start()
 }
 
-// const { createApp, ref, computed } = Vue
-
-// createApp({
-//   setup() {
-//   const state = ref(
-//     {
-//       ui: {
-//         showJson: false
-//       },
-//       data: {},
-//       error: {}
-//     }
-//   )
-
-//   const timeRemaining = ref('00:00')
-  
-//   let client = null
-
-//   // timeoutDate is ISOString
-//   const timeoutDate = computed(() => state.value?.data?.game?.timeoutDate)
-
-//   setInterval(() => {
-//     if (!timeoutDate.value) return
-    
-//     const diff = new Date(timeoutDate.value) - new Date()
-//     const totalSeconds = Math.max(0, Math.floor(diff / 1000))
-    
-//     const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-//     const s = (totalSeconds % 60).toString().padStart(2, '0')
-    
-//     timeRemaining.value = `${m}:${s}`
-//   }, 200)
-  
-//   const send = (action) => {
-//     client?.send?.(action?.type, action?.payload)
-//   }
-
-//   const close = () => {
-//     state.value.data = {}
-//     state.value.error = {}
-//     client?.close?.()
-//   }
-
-//   const search = () => {
-//     client = connect(WS_URL, 
-//         WebSocketRouter(
-//             (data) => {
-//               state.value.data = data
-//             },
-//             (error) => {
-//               state.value.error = error
-//             },
-//             () => {
-//               state.value.data = {}
-//               state.value.error = {}
-//             }
-//         )
-//     )
-//   }
-
-//   // when press space, show data modal
-//   window.addEventListener('keydown', (e) => {
-//     if (e.code === 'Space') {
-//       state.value.ui.showJson = !state.value.ui.showJson
-//     }
-//   })
-
-//   return { 
-//     state,
-//     send,
-//     timeRemaining,
-//     close,
-//     search
-//   }
-// }
-// }).mount('#app')
+setup()

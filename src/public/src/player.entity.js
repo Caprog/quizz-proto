@@ -1,38 +1,56 @@
-import { Actor } from "./actor.entity.js"
-import { Text } from "./text.entity.js"
+export class Player {
+    constructor({ name, width, stairs, y }){        
+        this.stairs = stairs
+        this.y = y
+        this.width = width
+        this.el = document.createElement('div')
+        this.el.innerHTML = `
+            <div class="you-marker">
+                <div class="you-label">YOU</div>
+                <div class="pointer-arrow"></div>
+            </div>
 
-export class Player extends Actor {
-    constructor({ name, isYou, isBot, ...rest }){
-        super('player', { ...rest })
-        this.botLabel = new Actor('bot-marker', { x: 2.25, y: 0, enabled: false }) 
-        this.youLabel = new Actor('marker', { x: 2.25, y: 0, enabled: false }) 
-        this.el.appendChild(this.botLabel.el)
-        this.el.appendChild(this.youLabel.el)
-       
-        this.label = new Text({ x: 2.25, y: -6, content: name, align: 'center' })
-        this.el.appendChild(this.label.el)
-        this.baseY = rest.y
+            <div class="label">${name}</div>
 
-        this.tickEl = document.createElement('span')
-        this.tickEl.className = 'tick-simple'
-        this.tickEl.textContent = '✔'
-        this.tickEl.style.display = 'none'
-        this.el.appendChild(this.tickEl)
+            <div class="eyes">
+                <div class="eye"></div>
+                <div class="eye"></div>
+            </div>
+        `
+        this.el.classList.add('actor')
     }
 
-    handle({ score, isCorrect, isBot, isYou, name }){
-        const offset = score > 0 ? 0 : 0
-        this.label.el.textContent = name
-        this.botLabel.enabled = isBot
-        this.youLabel.enabled = isYou
-        this.position.y = this.baseY - (4.13 * score)
-        this.tickEl.style.display = isCorrect ? 'block' : 'none'
+    handle({ me: { name, score }}) {
+        if(this.score !== score) {
+            this.score = score
+            moveElement(this.el, this.stairs[score], 0, this.y)
+        }
+        this.el.querySelector('.label').textContent = name
     }
 
     draw() {
-        super.draw()
-        this.label.draw()
-        this.botLabel.draw()
-        this.youLabel.draw()
+        this.el.style.width = this.width + 'cqw'
+        this.el.style.transform = `translate(0cqw, ${this.y}cqw)`
     }
+}
+
+
+const moveElement = (el, newParent, originX, originY) => {
+  const first = el.getBoundingClientRect()
+
+  newParent.appendChild(el)
+
+  const last = el.getBoundingClientRect()
+
+  const invertX = first.left - last.left
+  const invertY = first.top - last.top
+
+  // bounce
+  el.animate([
+    { transform: `translate(${invertX}px, ${invertY}px)` },
+    { transform: `translate(${originX}cqw, ${originY}cqw)` }
+  ], {
+    duration: 500,
+    easing: 'ease-out'
+  })
 }

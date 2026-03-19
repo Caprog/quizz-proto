@@ -9,12 +9,11 @@ export class UILayer {
         this.btnStart?.removeEventListener('click', this.onStart)
 
         this.el.innerHTML = `
-        <p id="message" class="style-retro"></p>
 
         <div id="main-menu" class="main-menu">
             <h1 class="title">RETURN TO THE<br>SOURCE</h1>
-            <button id="btn-start" class="style-retro">
-                COMMENCER
+            <button id="btn-start" class="style-retro" disabled>
+                CONNECTING...
             </button>
         </div>
         ` 

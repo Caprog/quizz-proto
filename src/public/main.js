@@ -1,18 +1,16 @@
 import { connect } from "./client.js"
 import { state } from "./src/store.js"
 import { subscribe } from 'https://esm.sh/valtio'
-import { WebSocketRouter } from "/shared/client.shared.js"
 import { WS_URL } from "/shared/contants.shared.js"
+import { PHASES } from "/shared/trivia.types.js"
 
 const setup = () => {
     const ws = connect(WS_URL, 
-      WebSocketRouter(
-          (data) => {
-            state.payload = data
-          },
-          (error) => {},
-          () => {}
-      )
+      {
+        onmessage: (data) => {
+          state.payload = data?.payload
+        }
+      }
     )
 
     let startCountDownTime = null
@@ -21,7 +19,7 @@ const setup = () => {
 
     subscribe(state, () => {
         console.log(JSON.stringify(state.payload, null, 2))
-        if(state.payload?.game?.phase === 'question') {
+        if(state.payload?.game?.phase === PHASES.QUESTION) {
           const option = state
             .payload
             .game
@@ -31,10 +29,10 @@ const setup = () => {
         }
 
         // dateToNextState is ISOString
-        if(lastEndCountDownTime !== state.payload.game.dateToNextState) {
-            lastEndCountDownTime = state.payload.game.dateToNextState
+        if(lastEndCountDownTime !== state.payload?.game?.dateToNextState) {
+            lastEndCountDownTime = state.payload?.game?.dateToNextState
             startCountDownTime = Date.now()
-            endCountDownTime = new Date(state.payload.game.dateToNextState).getTime()
+            endCountDownTime = new Date(state.payload?.game?.dateToNextState).getTime()
         }
         document.getElementById('state').textContent = JSON.stringify(state.payload, null, 2)
     })

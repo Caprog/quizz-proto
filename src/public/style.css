@@ -95,19 +95,42 @@ body {
 }
 
 .actor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 8cqmin;
   height: 6.8cqmin;
   border: 0.4cqmin solid var(--border-dark);
   box-sizing: border-box; 
-  position: absolute;
+  position: relative;
   background: var(--bg-world);
   overflow: visible !important;
+  transition: transform 0.3s ease-out;
+  flex-shrink: 0;
+}
+
+.you {
+  z-index: 1;
 }
 
 .actor .eyes {
- padding: 2cqmin 1.5cqmin;
- display: flex;
- justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 2cqmin 1.5cqmin;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actor .label {
+  position: relative;
+  top: -2cqw;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: black;
+  font-size: 1cqw;
 }
 
 .actor .eyes .eye {
@@ -130,7 +153,7 @@ body {
   justify-content: end;
   align-items: center;
   flex-direction: column;
-  gap: 3cqw;
+  gap: 3.5cqw;
   width: 80cqw;
   height: 100cqw;
   left: 50%;
@@ -186,9 +209,26 @@ body {
 
 .stair {
   height: 2cqmin;
+  position: relative;
   background-color: var(--border-dark);
   transition: opacity 0.4s ease-out;
-  opacity: 0.7;
+  opacity: 0.4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1cqw;
+  overflow: visible;
+}
+
+.spawn {
+  position: absolute;
+  top: 100cqw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  right: 0;
+  left: 0;
 }
 
 .text {
@@ -205,65 +245,53 @@ body {
   box-sizing: border-box;
   padding: 1cqmin 1.2cqmin;
 }
-
-.you-marker, .bot-marker {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 .you-marker {
-  animation: bouncePointer 0.8s infinite alternate;
+  top: -2cqw;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Combinamos las propiedades y añadimos will-change para optimizar */
+  will-change: transform;
+  animation: bouncePointer 0.8s infinite alternate ease-in-out;
 }
 
-.bot-marker {
-  opacity: 0.5;
-  animation: botMarker 0.8s infinite alternate;
+/* Corregido: brightness(0%) dejaba el elemento negro puro, no gris oscuro */
+.other {
+  filter: grayscale(100%) brightness(40%);
+  transition: filter 0.3s ease;
 }
 
-.you-label, .bot-label {
-    background: var(--bg-alt);
-    color: var(--text-muted);
-    padding: 0.4cqmin 0.8cqmin;
-    font-size: 0.8cqw;
-    border: 0.2cqmin solid var(--black);
-    box-shadow: var(--shadow-label);
-}
-
-.bot-label {
-    background: transparent;
-    color: var(--text-dark);
-    padding: 0.4cqmin 0.8cqmin;
-    font-size: 0.8cqw;
-    border: 0.2cqmin solid var(--black);
-    box-shadow: var(--shadow-label);
+.you-label {
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  padding: 0.4cqmin 0.8cqmin;
+  font-size: 0.8cqw;
+  border: 0.2cqmin solid var(--black);
+  box-shadow: var(--shadow-label);
+  white-space: nowrap;
 }
 
 .pointer-arrow {
-    width: 0;
-    height: 0;
-    border-left: 0.8cqmin solid transparent;
-    border-right: 0.8cqmin solid transparent;
-    border-top: 1.2cqmin solid var(--bg-alt);
-    filter: drop-shadow(0.35cqmin 0.35cqmin 0 var(--black));
-}
-
-.bot {
-  opacity: 0.5;
-}
-
-@keyframes botMarker {
-    from { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
-    to { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
+  width: 0;
+  height: 0;
+  border-left: 0.8cqmin solid transparent;
+  border-right: 0.8cqmin solid transparent;
+  border-top: 1.2cqmin solid var(--bg-alt);
+  /* drop-shadow corregido para que siga la forma del triángulo */
+  filter: drop-shadow(0 0.2cqmin 0 var(--black));
+  margin-top: -0.1cqmin; 
 }
 
 @keyframes bouncePointer {
-    from { transform: translateX(calc(2.1cqw - 50%)) translateY(-13cqmin) }
-    to { transform: translateX(calc(2.1cqw - 50%)) translateY(-14.2cqmin) }
+  from { 
+    transform: translate(0cqw, -4.5cqmin); 
+  }
+  to { 
+    transform: translate(0cqw, -6cqmin); 
+  }
 }
-
 
 
 
@@ -281,6 +309,13 @@ h1 {
   text-align: center;
   font-size: 6cqmin;
   font-style: italic;
+}
+
+.score {
+  position: absolute;
+  top: 1.5cqw;
+  left: 2cqw;
+  font-size: 1.5cqw;
 }
 
 .main-menu{
@@ -304,10 +339,10 @@ h1 {
 
 #message {
   position: absolute;
-  display: none;
   font-size: 2.5cqmin;
   text-align: center;
-  transform: translate(50cqmin, 10cqmin);
+  left: 50%;
+  transform: translate(-50%, 1cqw);
 }
 
 button {
@@ -315,6 +350,11 @@ button {
     cursor: pointer;
     padding: 0.5cqw 1cqw;
     border: 0.1cqw solid var(--border-dark);
+}
+
+button:disabled {
+    cursor: default;
+    opacity: 0.5;
 }
 
 
@@ -444,7 +484,7 @@ button {
 /* Tick Animation */
 .tick-simple {
     position: absolute;
-    top: -16cqmin;
+    top: -5cqmin;
     left: 4cqmin; /* Center of the avatar which is 8cqmin wide */
     transform: translateX(-50%);
     color: var(--black);
@@ -458,26 +498,4 @@ button {
 @keyframes popIn {
     0% { transform: scale(0); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
-}
-
-
-
-/* 
-  #####################################
-  #####################################
-  ############# LAYER DEBUG ###########
-  #####################################
-  #####################################
-*/
-
-.debug {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 100%;
-    background-color: var(--bg-overlay);
-    z-index: 1000;
-    color: var(--text-primary);
-    font-family: monospace !important;
 }

@@ -1,26 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Return To The Source</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <!-- <link rel='stylesheet' type='text/css' media='screen' href='style.css'> -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Proto</title>
+  <link rel="stylesheet" href="./style.css">  
 </head>
+
 <body>
-    <div id="app">
+  <!-- aspect ratio 16/9 -->
+  <div id="app" class="container" style="user-select: none;">
+    
+    <div class="crt-screen child-layer"></div>
 
-        <div id="header" style="width: 50%; height: 10px;">
-            <div id="countdown_bar" 
-                style="width: 100%; height: 10px; background-color: red; transition: width 0.1s linear;">
-            </div>
-        </div>
+    <div class="world child-layer">
+      <!-- Solo hay una escalera y 11 escalones, los escalones mas bajos toman el ancho de 80% del contenedor y va bajando el ancho a medida que el escalon esta mas arriba -->
+      <div class="stairs">
+        <div class="stair" data-score="10"></div>
+        <div class="stair" data-score="9"></div>
+        <div class="stair" data-score="8"></div>
+        <div class="stair" data-score="7"></div>
+        <div class="stair" data-score="6"></div>
+        <div class="stair" data-score="5"></div>
+        <div class="stair" data-score="4"></div>
+        <div class="stair" data-score="3"></div>
+        <div class="stair" data-score="2"></div>
+        <div class="stair" data-score="1"></div>
+        <div class="stair" data-score="0"></div>
+      </div>
 
-        <pre id="state" style="color: black; position: absolute; top: 0; left: 0;">
-
-        </pre>
-
+      <div id="spawn" class="spawn"></div>
     </div>
-    <script type="module" src='main.js'></script>
+
+    <div class="ui child-layer">
+      <div id="score" class="score">
+        <p>Score: 0</p>
+      </div>
+      <div id="countdown_bar" 
+          style="width: 100%; height: 0.5cqw; background-color: rgb(57, 57, 57); transition: width 0.1s linear;">
+      </div>
+      <p id="message" class="style-retro"></p>
+    </div>
+  
+  </div>
+  <script type="module" src="./client.js"></script>
 </body>
+
 </html>

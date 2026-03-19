@@ -1,14 +1,17 @@
 import { enter_feedback, enter_game_start, enter_question, handle_question, view_question_data } from "./trivia.handler.js"
-import { FLOW, PHASES } from "./types.js"
+import { DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, FLOW, PHASES, SUFFIXES } from "../../shared/trivia.types.js"
+import { getNotRepeatName } from "./utils.js"
 
 const { LOBBY, GAME_START, QUESTION, FEEDBACK, SCORE, GAME_OVER } = PHASES
 
+const speed = 0.07
+
 const timers = {
-    [GAME_START]: 5000,
-    [QUESTION]: 16000,
-    [FEEDBACK]: 5000,
-    [SCORE]: 5000,
-    [GAME_OVER]: 5000
+    [GAME_START]: 5000 * speed,
+    [QUESTION]: 16000 * speed,
+    [FEEDBACK]: 5000 * speed,
+    [SCORE]: 5000 * speed,
+    [GAME_OVER]: 5000 * speed
 }
 
 const guards = {
@@ -85,6 +88,12 @@ export class Trivia {
                         score: p.score ?? 0
                 })),
 
+                scores_count: Object.values(this.players)
+                    .reduce((acc, player) => {
+                        acc[player.score] = (acc[player.score] || 0) + 1
+                        return acc
+                    }, {}),
+
                 data: views[this.state]?.(this)
             }
         }
@@ -112,7 +121,7 @@ export class Trivia {
 
         this.players[playerId] = { 
             id: playerId,
-            name: playerId, // getNotRepeatName(DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, this.players) 
+            name: getNotRepeatName(DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, SUFFIXES, this.players), 
             score: 0
         }
 

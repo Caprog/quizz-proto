@@ -7,7 +7,6 @@ const sessions = new Map()
 
 const emit = ({ id, type, payload }) =>  {
     if(!id) return
-    console.log('emit to', id, type, payload)
     sessions.get(id)?.emit?.({ type, payload })
 }
 

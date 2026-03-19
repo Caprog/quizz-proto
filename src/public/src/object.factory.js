@@ -1,8 +1,15 @@
-export default (type) => {
+export default (type, { name }) => {
     if(type === 'player') {
         const el = document.createElement('div')
         
         el.innerHTML = `
+            <div class="you-marker">
+                <div class="you-label">YOU</div>
+                <div class="pointer-arrow"></div>
+            </div>
+
+            <div class="label">${name}</div>
+
             <div class="eyes">
                 <div class="eye"></div>
                 <div class="eye"></div>
@@ -11,31 +18,6 @@ export default (type) => {
 
         el.classList.add('actor')
 
-        return el
-    }
-
-    if(type === 'stair') {
-        const el = document.createElement('div')
-        el.classList.add('stair')
-        return el
-    }
-
-    if(type === 'text'){
-        const el = document.createElement('p')
-        return el
-    }
-
-    if(type === 'marker'){
-        const el = document.createElement('div')
-        el.className = 'you-marker'
-        el.innerHTML = `<div class="you-label">YOU</div><div class="pointer-arrow"></div>`
-        return el
-    }
-
-    if(type === 'bot-marker'){
-        const el = document.createElement('div')
-        el.className = 'bot-marker'
-        el.innerHTML = `<div class="bot bot-label">BOT</div><div class="bot pointer-arrow"></div>`
         return el
     }
 }
