@@ -1,9 +1,22 @@
-import { QuestionService } from "./question.service.js"
+import { QUESTIONS } from "./trivia.data.js"
+
+const getRandomQuestions = (count = 3) => {
+  return shuffle(QUESTIONS)
+    .slice(0, count)
+    .map(({ question, options }) => ({
+      question,
+      options: shuffle(options)
+    }))
+}
+
+const shuffle = (array) => {
+  return array.sort(() => Math.random() - 0.5)
+}
 
 export const enter_game_start = (game) => {
     game.data = {
         questionIndex: -1,
-        questions: QuestionService.getRandomQuestions(game.config.questionsCount)
+        questions: getRandomQuestions(game.config.questionsCount)
     }
 
     Object.values(game.players).forEach(player => {
@@ -15,7 +28,7 @@ export const enter_game_start = (game) => {
 export const enter_question = ({ data, config, players }) => {
     if(data.questionIndex === -1 || 
         data.questionIndex + 1 === config.questionsCount) {
-        data.questions = QuestionService.getRandomQuestions(config.questionsCount)
+        data.questions = getRandomQuestions(config.questionsCount)
     }
 
     data.questionIndex++

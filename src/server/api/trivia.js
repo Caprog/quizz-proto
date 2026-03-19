@@ -33,6 +33,7 @@ const views = {
     [QUESTION]: view_question_data
 }
 
+
 export class Trivia {
 
     state = LOBBY
