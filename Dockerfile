@@ -13,10 +13,9 @@ RUN npm install
 COPY . .
 
 # Default PORT if not provided
-ENV PORT=4003
-
+ENV PORT=4000
 # Expose the port (informative)
-EXPOSE 4003
+EXPOSE 4000
 
 # Default command is just to start the server
 CMD [ "npm", "start" ]
