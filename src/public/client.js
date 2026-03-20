@@ -1,6 +1,4 @@
 import { WS_URL } from "../shared/contants.shared.js"
-import { state } from "./src/store.js"
-import { subscribe } from 'https://esm.sh/valtio'
 import { Player } from "./src/player.entity.js"
 import { Countdown } from "./src/countdown.entity.js"
 import { PHASES } from "../shared/trivia.types.js"
@@ -46,11 +44,6 @@ export const connect = (url, handlers) => {
 }
 
 const setup = () => {
-
-  subscribe(state, () => {
-    console.log(JSON.stringify(state.payload, null, 2))
-  })
-  
   const start = () => {
     const ws = connect(WS_URL, 
       {
@@ -215,6 +208,14 @@ const setup = () => {
     you?.draw()
     questionCountdown.update()
     globalCountdown.update()
+
+    if (questionCountdown.isFinished) {
+      const buttons = questionsEl.querySelectorAll('.btn-option')
+      buttons.forEach(btn => {
+        btn.disabled = true
+      })
+    }
+
     requestAnimationFrame(update)
   }
   

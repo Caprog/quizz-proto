@@ -37,7 +37,7 @@
   ############# GENERAL CSS ###########
   #####################################
   #####################################
-*/
+ */
 
 body {
     color: var(--text-body);
@@ -82,7 +82,7 @@ body {
   ############# WORLD CSS #############
   #####################################
   #####################################
-*/
+ */
 
 
 .world {
@@ -90,13 +90,6 @@ body {
   background-color: var(--bg-world);
 }
 
-.floor {
-  position: absolute;
-  background-color: var(--border-dark);
-  transform: translate3d(0, calc(56.25cqw * 0.89), 0);
-  width: 100cqw;
-  height: 10cqw;
-}
 
 .actor {
   display: flex;
@@ -127,9 +120,6 @@ body {
   z-index: 0;
 }
 
-.you {
-  z-index: 1;
-}
 
 .actor .eyes {
   position: absolute;
@@ -161,13 +151,6 @@ body {
   background-color: var(--border-dark);
 }
 
-.actors {
-  position: absolute;
-  display: flex;
-  top: 0;
-  width: 100cqw;
-  height: 100cqw;
-}
 
 .stairs {
   position: absolute;
@@ -259,20 +242,6 @@ body {
   left: 0;
 }
 
-.text {
-  position: absolute;
-  color: var(--text-dark);
-  white-space: nowrap;
-  pointer-events: none;
-  
-  width: max-content;
-  
-  display: flex;
-  justify-content: center;
-
-  box-sizing: border-box;
-  padding: 1cqmin 1.2cqmin;
-}
 .you-marker {
   top: -2cqw;
   left: 50%;
@@ -332,7 +301,7 @@ body {
   ############# UI CSS ################
   #####################################
   #####################################
-*/
+ */
 h1 {
   color: var(--white);
   line-height: 8cqmin;
@@ -368,15 +337,6 @@ h1 {
   transform: translate(-50%, 0);
 }
 
-.main-menu{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg-overlay);
-}
 
 .style-retro {
     background: var(--white);
@@ -408,6 +368,10 @@ button:disabled {
     opacity: 0.5;
 }
 
+.btn-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 .crt-screen {
     position: absolute;
@@ -509,51 +473,4 @@ button:disabled {
     width: 100%;
     background: var(--white);
     transition: width 0.1s linear;
-}
-
-.feedback-modal {
-    text-align: center;
-    color: var(--text-primary);
-}
-
-.feedback-status {
-    font-size: 2.5cqw;
-    margin-bottom: 1.5cqw;
-}
-
-.feedback-correct {
-    color: var(--text-primary);
-    font-size: 1.2cqw;
-    opacity: 0.8;
-}
-
-.shake {
-    animation: shakeAnim 0.4s ease-in-out;
-}
-
-@keyframes shakeAnim {
-    0%, 100% { transform: translate(-50%, -50%) }
-    20% { transform: translate(calc(-50% - 1cqw), calc(-50% + 0.5cqw)) }
-    40% { transform: translate(calc(-50% + 1cqw), calc(-50% - 0.5cqw)) }
-    60% { transform: translate(calc(-50% - 0.5cqw), calc(-50% + 0.5cqw)) }
-    80% { transform: translate(calc(-50% + 0.5cqw), calc(-50% - 0.5cqw)) }
-}
-
-/* Tick Animation */
-.tick-simple {
-    position: absolute;
-    top: -5cqmin;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--black);
-    font-size: 5cqmin;
-    text-shadow: 0.4cqmin 0.4cqmin 0 var(--white);
-    pointer-events: none;
-    z-index: 100;
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
 }

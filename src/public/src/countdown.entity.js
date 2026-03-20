@@ -18,4 +18,8 @@ export class Countdown {
             this.endCountDownTime = new Date(game?.dateToNextState).getTime()
         }
     }
+
+    get isFinished(){
+        return Date.now() >= this.endCountDownTime
+    }
 }
