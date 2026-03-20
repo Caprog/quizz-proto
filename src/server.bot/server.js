@@ -1,7 +1,7 @@
 import { WebSocket } from "ws"
 import { WS_URL } from "../shared/contants.shared.js"
 
-const BOTS_COUNT = 50
+const BOTS_COUNT = 5
 const MIN_DELAY = 2000
 const MAX_DELAY = 10000
 const MIN_QUESTION_DELAY = 6000
