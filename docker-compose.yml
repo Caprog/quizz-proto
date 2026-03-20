@@ -1,0 +1,17 @@
+services:
+  server:
+    build: .
+    ports:
+      - "10000:10000"
+    environment:
+      - PORT=10000
+    restart: always
+
+  bot:
+    build: .
+    command: npm run bot
+    environment:
+      - WS_URL=ws://server:10000
+    depends_on:
+      - server
+    restart: always
