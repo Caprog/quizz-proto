@@ -52,6 +52,10 @@ body {
   font-family: 'Press Start 2P';
 }
 
+.hidden {
+  display: none !important;
+}
+
 .container {
   container-type: size;
   width: 100vw;
@@ -98,15 +102,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 8cqmin;
-  height: 6.8cqmin;
-  border: 0.4cqmin solid var(--border-dark);
-  box-sizing: border-box; 
+  height: 2cqw;
+  --actor-width: 2cqw;
+  width: var(--actor-width);
   position: relative;
-  background: var(--bg-world);
   overflow: visible !important;
   transition: transform 0.3s ease-out;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Cuerpo visual del actor para permitir solapamiento */
+.actor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--actor-width);
+  height: 100%;
+  border: 0.2cqmin solid var(--border-dark);
+  background: var(--bg-world);
+  box-sizing: border-box;
+  z-index: 0;
 }
 
 .you {
@@ -115,27 +133,31 @@ body {
 
 .actor .eyes {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 2cqmin 1.5cqmin;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--actor-width);
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .actor .label {
-  position: relative;
+  position: absolute;
   top: -2cqw;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
   color: black;
   font-size: 1cqw;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .actor .eyes .eye {
-  width: 1.1cqmin;
-  height: 1.1cqmin;
+  width: 20%;
+  aspect-ratio: 1;
   background-color: var(--border-dark);
 }
 
@@ -153,9 +175,9 @@ body {
   justify-content: end;
   align-items: center;
   flex-direction: column;
-  gap: 3.5cqw;
+  gap: 3cqw;
   width: 80cqw;
-  height: 100cqw;
+  height: 80cqw;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
@@ -208,13 +230,13 @@ body {
 }
 
 .stair {
-  height: 2cqmin;
+  height: 1.5cqmin;
   position: relative;
   transition: opacity 0.4s ease-out;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 1cqw;
+  gap: 0.25cqw;
   overflow: visible;
 }
 
@@ -253,15 +275,27 @@ body {
 }
 .you-marker {
   top: -2cqw;
+  left: 50%;
+  transform: translate(-50%, 0);
   position: absolute;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* Combinamos las propiedades y añadimos will-change para optimizar */
   will-change: transform;
   animation: bouncePointer 0.8s infinite alternate ease-in-out;
 }
+
+
+@keyframes bouncePointer {
+  from { 
+    transform: translate(-50%, -4.5cqmin); 
+  }
+  to { 
+    transform: translate(-50%, -6cqmin); 
+  }
+}
+
 
 /* Corregido: brightness(0%) dejaba el elemento negro puro, no gris oscuro */
 .other {
@@ -290,15 +324,6 @@ body {
   margin-top: -0.1cqmin; 
 }
 
-@keyframes bouncePointer {
-  from { 
-    transform: translate(0cqw, -4.5cqmin); 
-  }
-  to { 
-    transform: translate(0cqw, -6cqmin); 
-  }
-}
-
 
 
 /* 
@@ -317,11 +342,30 @@ h1 {
   font-style: italic;
 }
 
-.score {
+.score, .players-count, .question-number {
   position: absolute;
   top: 1.5cqw;
-  left: 2cqw;
   font-size: 1.5cqw;
+}
+
+.score {
+  left: 2cqw;
+}
+
+.top-x {
+  position: absolute;
+  top: 4cqw;
+  left: 2cqw;
+  font-size: 0.5cqw;
+}
+
+.players-count {
+  right: 2cqw;
+}
+
+.question-number {
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 
 .main-menu{
@@ -347,6 +391,7 @@ h1 {
   position: absolute;
   font-size: 2.5cqmin;
   text-align: center;
+  top: 3cqw;
   left: 50%;
   transform: translate(-50%, 1cqw);
 }
@@ -440,6 +485,13 @@ button:disabled {
     background: var(--white);
     color: var(--black);
     border-color: var(--border-white);
+    animation: selected 0.3s ease-in-out;
+}
+
+@keyframes selected {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 .timer-container {
@@ -491,7 +543,7 @@ button:disabled {
 .tick-simple {
     position: absolute;
     top: -5cqmin;
-    left: 4cqmin; /* Center of the avatar which is 8cqmin wide */
+    left: 50%;
     transform: translateX(-50%);
     color: var(--black);
     font-size: 5cqmin;

@@ -1,6 +1,6 @@
 export class Countdown {
-    constructor(){
-        this.el = document.getElementById('countdown_bar')
+    constructor(el){
+        this.el = el
         this.lastEndCountDownTime = null
         this.startCountDownTime = null
         this.endCountDownTime = null

@@ -34,13 +34,31 @@
     </div>
 
     <div class="ui child-layer">
+      <div id="global_countdown_bar"
+         style="width: 100%; height: 0.5cqw; background-color: rgb(57, 57, 57); transition: width 0.1s linear;">
+      </div>
       <div id="score" class="score">
-        <p>Score: 0</p>
+        <p>0 pts</p>
       </div>
-      <div id="countdown_bar" 
-          style="width: 100%; height: 0.5cqw; background-color: rgb(57, 57, 57); transition: width 0.1s linear;">
+      <div id="question_number" class="question-number">
+        <p></p>
       </div>
-      <p id="message" class="style-retro"></p>
+      <div id="top_x" class="top-x"></div>
+      <div id="players_count" class="players-count">
+        <p>0 Players</p>
+      </div>
+      <p id="message" class="style-retro hidden"></p>
+
+      `
+      <div id="modal-quiz" class="modal-quiz hidden">
+        <h1 id="question" class="title-quiz"></h1>
+        <div id="quiz-options" class="quiz-options"></div>
+        <div class="timer-container">
+          <div id="question_countdown_bar" class="timer-bar"
+            style="width: 100%; transition: width 0.1s linear;">
+          </div>
+        </div>
+      </div>
     </div>
   
   </div>

@@ -1,6 +1,7 @@
 export const PHASES = {
     LOBBY: 'lobby',
     GAME_START: 'game_start',
+    PREPARE_TO_QUESTION: 'prepare_to_question',
     QUESTION: 'question',
     FEEDBACK: 'feedback',
     SCORE: 'score',
@@ -10,6 +11,7 @@ export const PHASES = {
 export const FLOW = [
     PHASES.LOBBY,
     PHASES.GAME_START,
+    PHASES.PREPARE_TO_QUESTION,
     PHASES.QUESTION,
     PHASES.FEEDBACK,
     PHASES.SCORE,

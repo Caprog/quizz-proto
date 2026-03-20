@@ -65,6 +65,12 @@ export const handle_question = (game, playerId, { type, payload }) => {
 
 export const enter_feedback = (game) => {
     Object.values(game.players).forEach(player => {
-        player.score += player?.selectedAnswer === game.data?.correctAnswer ? 1 : 0
+        player.isCorrect = player?.selectedAnswer === game.data?.correctAnswer
+    })
+}
+
+export const enter_score = (game) => {
+    Object.values(game.players).forEach(player => {
+        player.score += player.isCorrect ? 1 : 0
     })
 }

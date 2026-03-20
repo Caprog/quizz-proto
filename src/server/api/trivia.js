@@ -1,31 +1,34 @@
-import { enter_feedback, enter_game_start, enter_question, handle_question, view_question_data } from "./trivia.handler.js"
+import { enter_feedback, enter_game_start, enter_question, enter_score, handle_question, view_question_data } from "./trivia.handler.js"
 import { DAVID_MEKERSA_LEGACY_NAMES_AND_OTHER_STUFF, FLOW, PHASES, SUFFIXES } from "../../shared/trivia.types.js"
 import { getNotRepeatName } from "./utils.js"
 
-const { LOBBY, GAME_START, QUESTION, FEEDBACK, SCORE, GAME_OVER } = PHASES
+const { LOBBY, GAME_START, QUESTION, FEEDBACK, SCORE, GAME_OVER, PREPARE_TO_QUESTION } = PHASES
 
-const speed = 0.07
+const speed = 1
 
 const timers = {
+    [LOBBY]: 2000 * speed,
     [GAME_START]: 5000 * speed,
+    [PREPARE_TO_QUESTION]: 2000 * speed,
     [QUESTION]: 16000 * speed,
-    [FEEDBACK]: 5000 * speed,
-    [SCORE]: 5000 * speed,
+    [FEEDBACK]: 1000 * speed,
+    [SCORE]: 3000 * speed,
     [GAME_OVER]: 5000 * speed
 }
 
 const guards = {
-    [QUESTION]: (game) => game.state === FEEDBACK 
+    [PREPARE_TO_QUESTION]: (game) => game.state === SCORE 
         && game.data.questionIndex + 1 < game.config.questionsCount,
 
-    [GAME_OVER]: (game) => game.state === SCORE 
+    [GAME_OVER]: (game) => game.state === SCORE
         && game.data.questionIndex + 1 === game.config.questionsCount
 }
 
 const enters = {
     [GAME_START]: enter_game_start,
     [QUESTION]: enter_question,
-    [FEEDBACK]: enter_feedback
+    [FEEDBACK]: enter_feedback,
+    [SCORE]: enter_score
 }
 
 const handlers = {
@@ -69,6 +72,19 @@ export class Trivia {
     }
 
     getState() {
+        const players = Object.values(this.players)
+        .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+
+        const uniqueScores = [...new Set(players.map(p => p.score ?? 0))].slice(0, 3)
+        const minThreshold = uniqueScores[uniqueScores.length - 1] ?? 0
+
+        const top = players
+        .filter(p => p.score > 0)
+        .filter(p => (p.score ?? 0) >= minThreshold)
+        .map(({ name, score }) => ({
+            name,
+            score: score ?? 0
+        }))
         return {
             players_count: this.playersCount(),
 
@@ -80,17 +96,11 @@ export class Trivia {
 
                 dateToNextState: this.dateToNextState,
 
-                top: Object.values(this.players)
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 5)
-                    .map(p => ({ 
-                        name: p.name,
-                        score: p.score ?? 0
-                })),
+                top,
 
-                scores_count: Object.values(this.players)
+                leaderboard: Object.values(this.players)
                     .reduce((acc, player) => {
-                        acc[player.score] = (acc[player.score] || 0) + 1
+                        acc[player.name] = player.score
                         return acc
                     }, {}),
 
