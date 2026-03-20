@@ -80,6 +80,11 @@ const setup = () => {
             messageEl.classList.remove('hidden')
           }
 
+          if(state?.game?.phase === PHASES.GAME_START) {
+            messageEl.textContent = `La partie commence`
+            messageEl.classList.remove('hidden')
+          }
+
           if(state?.game?.phase === PHASES.PREPARE_TO_QUESTION) {
             messageEl.textContent = `Prépare-toi pour la question ${state?.game?.questionNumber + 1}`
             messageEl.classList.remove('hidden')
@@ -92,6 +97,11 @@ const setup = () => {
 
           if(state?.game?.phase === PHASES.SCORE) {
             messageEl.textContent = `Score mise à jour`
+            messageEl.classList.remove('hidden')
+          }
+
+          if(state?.game?.phase === PHASES.GAME_OVER) {
+            messageEl.textContent = `Fin de la partie`
             messageEl.classList.remove('hidden')
           }
           
@@ -107,9 +117,10 @@ const setup = () => {
             
             //remove others
             others.forEach(other => {
-              other.setScore(0)
+              other.score = 0
               other.el.remove()
             })
+
             others = []
           
             you.setScore(0)
@@ -117,9 +128,6 @@ const setup = () => {
 
           if(state?.game?.phase === PHASES.QUESTION) {
             const options = state?.game?.data?.options || []
-            const option = options[Math.floor(Math.random() * options.length)]
-            if(option) ws.send('select', option.value)
-
             // countdown question
             questionEl.textContent = state?.game?.data?.text
 

@@ -10,10 +10,10 @@ const timers = {
     [LOBBY]: 2000 * speed,
     [GAME_START]: 5000 * speed,
     [PREPARE_TO_QUESTION]: 2000 * speed,
-    [QUESTION]: 16000 * speed,
+    [QUESTION]: 20000 * speed,
     [FEEDBACK]: 1000 * speed,
     [SCORE]: 3000 * speed,
-    [GAME_OVER]: 5000 * speed
+    [GAME_OVER]: 8000 * speed
 }
 
 const guards = {
