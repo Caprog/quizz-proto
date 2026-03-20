@@ -12,11 +12,11 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-# The PORT variable is used by the server
-ENV PORT=10000
+# Default PORT if not provided
+ENV PORT=4003
 
-# Expose the server port
-EXPOSE 10000
+# Expose the port (informative)
+EXPOSE 4003
 
 # Default command is just to start the server
 CMD [ "npm", "start" ]

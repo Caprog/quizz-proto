@@ -1,17 +1,32 @@
 services:
-  server:
+  quiz:
     build: .
-    ports:
-      - "10000:10000"
-    environment:
-      - PORT=10000
     restart: always
+    container_name: ${PROJECT_NAME}
+    env_file:
+      - .env
+    volumes:
+      - ./${DATA_FOLDER}:/app/data
+    labels:
+      caddy: ${PROJECT_NAME}.${DOMAIN}
+      caddy.reverse_proxy: "{{upstreams ${INTERNAL_PORT}}}"
+    networks:
+      - caddy-proxy-network
+      - internal-network
 
   bot:
     build: .
+    restart: always
     command: npm run bot
     environment:
-      - WS_URL=ws://server:10000
+      - WS_URL=ws://quiz:${INTERNAL_PORT}
     depends_on:
-      - server
-    restart: always
+      - quiz
+    networks:
+      - internal-network
+
+networks:
+  caddy-proxy-network:
+    external: true
+  internal-network:
+    driver: bridge
